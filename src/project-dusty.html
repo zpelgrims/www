@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "Dusty (Arnold c++ api)"
+    })
+  </head>
+  <body class="bg-light">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+    
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+            DUSTY IS A SMALL UTILITY SHADER FOR THE ARNOLD RENDERER CAPABLE OF SIMULATING THE SETTLING OF DUST. IT DOES SOME EXTRA RAYTRACING TO SEARCH FOR TOP OCCLUSIONS.
+        </p>
+
+        <div class="twentytwenty-container rounded">
+            <img src="/assets/img/projects/dusty/zeno_pelgrims_dusty_arnold_shader_dusty.png" alt="Maya snow node + Dusty">
+            <img src="/assets/img/projects/dusty/zeno_pelgrims_dusty_arnold_shader_snow.png" alt="Default Maya Snow node">
+        </div>
+        <!-- <figcaption class="figure-caption text-center">Comparison of directional scattering with random scattering. For certain materials, this directionality is extremely important.</figcaption> -->
+        
+        <h2 class="mt-10">Download</h2>
+
+        <div class="row mb-7 mb-md-9 mt-10">
+          <div class="col-12 col-md-4 text-center">
+            <button class="btn btn-primary-soft">1.0-windows-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-primary-soft">1.0-osx-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-secondary-soft">Source Code</button>
+            </div>
+        </div>
+        
+        <h2 class="mt-10">Installation</h2>
+
+        <div class="container mt-10">
+            <div class="row mb-8">
+                <div class="col-sm">
+                   <p>MtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUSTY/bin</code></strong></br></br>
+                    <strong class="badge badge-danger-soft"><code>MTOA_TEMPLATES_PATH = $PATH_TO_DUSTY/ae</code></strong></br></br>
+                    It’s also possible to copy the files into your MtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/shaders</code></strong></br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/ae</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/scripts/mtoa/ui/ae</code></strong>
+                    </p>
+                </div>
+                <div class="col-sm">
+                   <p>HtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUST/bin</code></strong></br></br>
+                    It’s also possible to copy the files into your HtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$HTOA_LOCATION]/arnold/plugins</code></strong></br></br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mt-10">Parameters</h2>
+        <h4 class="mt-5">Input</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+            Dusty expects an input to work properly, a dot product calculation of the shading point normal and the Y-axis. In Maya, just plug in a snow node, which takes care of those calculations. This is necessary to get the nice dust falloff, as Dusty only takes care of the extra raytracing to search for top occlusions.
+        </p>
+        <h4 class="mt-5">Radius</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+            The maximum ray length in which to search for object intersections in centimeters.
+        </p>
+        <h4 class="mt-5">Spread</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+            Limit the angle of hemisphere sampling with this. Smaller spreads will produce harder edges, whilst a larger spread will soften them. Equal to the AiAmbientOcclusion spread function.
+        </p>
+        <h4 class="mt-5">Trace Set</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+            Use this to limit the raytracing for this specific shader to certain objects. Dusty works with inclusive trace sets.</br></br>
+
+            In an asset pipeline, it is important to set a single trace set name, eg “asset01”. Then set the same trace set name in the object shape node for all objects which you want to include. Objects that you do not want to include, you have to give another trace set name, eg “none”. This is important since inclusive trace sets will trace both against objects with the same trace set name, and objects without any name at all.        
+        </p>
+        </div> <!-- / .row -->
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>

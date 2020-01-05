@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+    "pageTitle": "Portfolio of Zeno Pelgrims"
+    })
+  </head>
+  <body class="bg-light">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+    "classList": "navbar-light",
+    "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-4 pb-12 pb-md-12">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8 text-center">
+
+            <!-- Text -->
+            <!-- <p class="lead text-secondary mb-4">
+              Technical surfacing artist with love for lens simulation.
+            </p> -->
+
+            <!-- Badges -->
+            <nav class="nav justify-content-center">
+              <a class="badge badge-pill badge-secondary-soft active mr-1 mb-1" href="#" data-toggle="pill" data-filter="*" data-target="#portfolio">
+                <span class="h6 text-uppercase">all</span>
+              </a>
+              <a class="badge badge-pill badge-secondary-soft mr-1 mb-1" href="#" data-toggle="pill" data-filter=".cg" data-target="#portfolio">
+                <span class="h6 text-uppercase">cg/work</span>
+              </a>
+              <a class="badge badge-pill badge-secondary-soft mr-1 mb-1" href="#" data-toggle="pill" data-filter=".code" data-target="#portfolio">
+                <span class="h6 text-uppercase">code/freetime</span>
+              </a>
+            </nav>
+
+          </div>
+        </div> <!-- / .row -->
+      </div> <!-- / .container -->
+    </section>
+
+
+    <!-- CONTENT
+    ================================================== -->
+    <section class="py-8 py-md-11 mt-n10 mt-md-n14">
+      <div class="container">
+        <div class="row" id="portfolio" data-isotope='{"layoutMode": "fitRows"}'>
+          <div class="col-12 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-ldr-the-witness.html">
+              <img class="card-img-top" src="assets/img/projects/ldr-the-witness/zenopelgrims_the_witness_love_death_robots_11.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Love Death & Robots - The Witness (surfacing supervisor)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-shadersxyz.html">
+              <img class="card-img-top" src="assets/img/projects/shadersxyz/shadersxyz_contactsheet.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Shaders.xyz (founder & entries)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 code">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="#!">
+              <!-- <img class="card-img-top" src="assets/img/projects/pota/pota_test_petzval.png" alt="..." /> -->
+              <iframe width="100%" height="500" src="https://www.youtube.com/embed/UfKJ14eF7Ok" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Impressionism in path tracers (Arnold c++ shader)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 code">
+              <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-polynomial-optics-arnold.html">
+                <img class="card-img-top" src="assets/img/projects/pota/pota_test_petzval.png" alt="..." />
+                <div class="card-body">
+                  <h6 class="text-uppercase mb-1 text-muted">Polynomial Optics to Arnold (Arnold c++ lens shader)</h6>
+                </div>
+              </a>
+            </div>
+          <div class="col-12 col-md-5 code">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-directional-texture-scattering.html">
+              <img class="card-img-top" src="assets/img/projects/directional-texture-scattering/comparison_directional_scatter.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Directional texture scattering (open shading language)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-md-7 code">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-dusty.html">
+              <img class="card-img-top" src="assets/img/projects/dusty/zeno_pelgrims_dusty_arnold_shader_dusty.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Dusty (Arnold c++ shader)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-md-6 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-naughty-princess.html">
+              <img class="card-img-top" src="assets/img/projects/naughty-princess/naughty_princess_cover_1100-1.jpg" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Naughty Princess (University Short)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 col-md-6 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-still-life.html">
+              <img class="card-img-top" src="assets/img/projects/still-life/zeno_pelgrims_still_life_cover_1100.jpg" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Still Life (arnold/alshaders)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-mars-2030.html">
+              <img class="card-img-top" src="assets/img/projects/mars-2030/zeno_pelgrims_mars2030_2k.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Mars 2030 (arnold)</h6>
+              </div>
+            </a>
+          </div>
+          <div class="col-12 cg">
+            <a class="card lift lift-lg shadow-light-lg mb-7" href="@@webRoot/project-self-portrait.html">
+              <img class="card-img-top" src="assets/img/projects/self-portrait/zeno_pelgrims_train_thoughts_final_2K.png" alt="..." />
+              <div class="card-body">
+                <h6 class="text-uppercase mb-1 text-muted">Self portrait (arnold)</h6>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", { "classList": "bg-gray-200" })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+  </body>
+</html>

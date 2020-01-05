@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "POTA (Arnold c++ api)"
+    })
+  </head>
+  <body class="bg-light">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+    
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+            POTA [POLYNOMIAL OPTICS TO ARNOLD] IS AN OPEN-SOURCE CAMERA SHADER FOR THE ARNOLD RENDERER BASED ON SPARSE HIGH-DEGREE POLYNOMIALS FOR WIDE-ANGLE LENSES [2016].
+        </p>
+        
+
+        <div class="twentytwenty-container rounded">
+            <img src="/assets/img/projects/pota/pota_test_thinlens.png" alt="Default arnold thinlens">
+            <img src="/assets/img/projects/pota/pota_test_petzval.png" alt="Pota (1900's Petzval)">
+            <img src="/assets/img/projects/pota/pota_chart_thinlens.png" alt="Default arnold thinlens">
+            <img src="/assets/img/projects/pota/polynomial-optics-arnold-zeiss-biotar-chromatic-aberration.png" alt="Pota (Zeiss Biotar)">
+        </div>
+        <figcaption class="figure-caption text-center">Renders showing the difference between the classical thin lens approximation and both a Zeiss Biotar (1927)(1) and a 1900’s Petzval (2) rendered through polynomial optics. Even though the camera ray calculations take slightly longer, this is negligible in scenes of higher geometrical/shading complexity.</figcaption>
+
+
+        <p class="h5 text-secondary mt-5 mb-2">
+            POTA is an implementation of <a href="https://cg.ivd.kit.edu/publications/2016/lens_sparse_poly/2016_optics.pdf">Sparse high-degree polynomials for wide-angle lenses [2016]</a>. <strong>It renders images with high-order aberrations, at a fraction of the cost of tracing rays through lens elements.</strong> It is done by pre-calculating fitted polynomials, which serve as a black-box to transform the rays on the sensor to rays on the outer pupil. All credit goes out to the authors of the paper, I only wrote the implementation for Arnold.</br></br>
+            This shader represents 20 years of research efforts in camera shaders compared to <a href="http://www.zenopelgrims.com/zoic">ZOIC</a>, where every single camera ray was physically traced through every lens element <a href="https://graphics.stanford.edu/papers/camera/">[based on a paper by Kolb et al from 1995]</a>. The visual quality is comparable, but the polynomial optics technique is many times faster and can be compared to the cost of thin-lens calculations. Especially in complex scenes, the cost of using polynomial optics over the thin lens approximation is neglegible.</br></br>
+            Note that because the lens descriptions have a fitted approximation, it is not possible to change the focal length like we are used to with the thin-lens approximation. Think of POTA as a library of prime lenses instead. Some focal length adjustments can be made by changing the sensor size [just like with real camera’s – note the differences in focal length of a lens on a aps-c sensor vs full frame].</br></br>
+            POTA is wavelength-dependent, which means that optically correct chromatic aberrations (ignoring lens coatings as there almost never is accurate data for that) are possible by rendering 3 images with corresponding CIE RGB wavelengths, one for each respective colour channel. It’s expensive to render 3 images – but the option is there. For example, 700nm for the red channel, 546.1 nm for the green channel and 435.8 nm for the blue channel.
+        </p>
+
+        <h2 class="mt-10">Download</h2>
+
+        <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+        <strong>Note:</strong> I made the repository private due to a large incoming update.
+        </div>
+
+        <!-- <div class="row mb-7 mb-md-9 mt-10">
+          <div class="col-12 col-md-4 text-center">
+            <button class="btn btn-primary-soft">1.0-windows-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-primary-soft">1.0-osx-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-secondary-soft">Source Code</button>
+            </div>
+        </div> -->
+        
+        <h2 class="mt-10">Installation</h2>
+
+        <div class="container mt-5">
+            <div class="row mb-8">
+                <div class="col-sm">
+                   <p>MtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_POTA with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_POTA/bin</code></strong></br></br>
+                    <strong class="badge badge-danger-soft"><code>MTOA_TEMPLATES_PATH = $PATH_TO_POTA/ae</code></strong></br></br>
+                    It’s also possible to copy the files into your MtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/shaders</code></strong></br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/ae</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/scripts/mtoa/ui/ae</code></strong>
+                    </p>
+                </div>
+                <div class="col-sm">
+                   <p>HtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_POTA with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_POTA/bin</code></strong></br></br>
+                    It’s also possible to copy the files into your HtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$HTOA_LOCATION]/arnold/plugins</code></strong></br></br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mt-10">Parameters</h2>
+        <h4 class="mt-5">Lens Models</h4>
+        <p class="h5 text-secondary mt-2 mb-2">POTA provides multiple prime lens descriptions. The options are:</p>
+        <div class="container">
+                <div class="row mb-5 mt-5">
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/pota/zeiss_biotar_1927_58mm.png" alt="...">
+                        <figcaption class="figure-caption text-center">Zeiss Biotar 1927 (58mm)</figcaption>
+                    </div>
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/pota/1936-primoplan-58mm.png" alt="...">
+                        <figcaption class="figure-caption text-center">Primoplan 1936 (58mm)</figcaption>
+                    </div>
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/pota/petzval_1900_66mm.png" alt="...">
+                        <figcaption class="figure-caption text-center">Petzval 1900 (66mm)</figcaption>
+                    </div>
+                    
+                </div>
+                <div class="row mb-8">
+                        <div class="col-sm">
+                            <img class="img-fluid" src="assets/img/projects/pota/1954-zeiss-flektagon-35mm.png" alt="...">
+                            <figcaption class="figure-caption text-center">Zeiss Flektagon 1954 (35mm)</figcaption>
+                        </div>
+                        <div class="col-sm">
+                            <img class="img-fluid" src="assets/img/projects/pota/doublegauss_angenieux_1953_50mm.png" alt="...">
+                            <figcaption class="figure-caption text-center">Angenieux Double Gauss 1953 (50mm)</figcaption>
+                        </div>
+                        <div class="col-sm">
+                            <img class="img-fluid" src="assets/img/projects/pota/takumar_1969_50mm.png" alt="...">
+                            <figcaption class="figure-caption text-center">SMC Takumar 1969 (50mm)</figcaption>
+                        </div>
+                        
+                    </div>
+            </div>
+        <figcaption class="figure-caption text-center">All lens diagrams here are generated by Johannes Hanika’s lens viewer, part of the polynomial optics source code.</figcaption>
+        
+        <h4 class="mt-5">Units</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Set the units of your specific DCC. For mtoa, this should be cm. For htoa, this should be meters.
+        </p>
+        <h4 class="mt-5">Sensor Width</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Default is the width of a full frame sensor [36mm]. Adjustments to the sensor size result in different effective focal lengths of the lens. Use this to either match a lens to a sensor size, or to slightly change the focal length of the prime lenses. Note that the lenses provided are made for various sensor sizes, and this information is often not disclosed in the lens patents. Don’t be afraid to try other sizes than the default full frame sensor.
+        </p>
+        <h4 class="mt-5">Wavelength</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Different wavelengths of light are bent in slightly varying angles when changing interfaces, and this is accounted for. Since Arnold is an RGB renderer, this can be left at the default (550 nm). If you want to render optically correct chromatic aberrations, you can render out 3 separate images with corresponding RGB CIE wavelengths, one for each colour channel of the final image. For example, 700nm for the red channel, 546.1 nm for the green channel and 435.8 nm for the blue channel.
+        </p>
+        <h4 class="mt-5">Fstop</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                The f-stop is a dimensionless number that is a quantitative measure of lens speed. Practically, it is the ratio of the distance from the lens to the point where the focused light converges [the focal length] over the diameter of the aperture. An f-stop of 0.0 is translated as the largest possible aperture diameter the lens allows.
+        </p>
+        <h4 class="mt-5">Focus Distance</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Distance between the lens and the focal plane in units set using the unit parameter. Setting this shifts the sensor to the focal plane. Since POTA is an optically imperfect lens system the autofocus is best-effort. Use the focus distance as an initial autofocus, then adjust the “extra_sensor_shift” to focus the lens perfectly if necessary.
+        </p>
+
+        <h4 class="mt-5">Vignetting Retries</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Sometimes a ray gets vignetted, but if the ray would have been shot in a different direction – it would have passed.
+        </p>
+        <h4 class="mt-5">Aperture Blades</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                Amount of edges of the aperture. < 3 blades will use concentric mapping, sampling a perfect disk with no blades.
+        </p>
+        <h4 class="mt-5">Proper ray derivatives</h4>
+        <p class="h5 text-secondary mt-2 mb-2">
+                This calculates, surprise, the proper ray derivatives. To do this, 3 rays have to be traced instead of one, so it is a bit slower. On the other hand, texture I/O should be better. This option should be removed in a future release.
+        </p>
+        </div> <!-- / .row -->
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>

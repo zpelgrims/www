@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "Directional Texture Scattering (OSL)"
+    })
+  </head>
+  <body class="bg-light">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+    
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+            DIRECTIONAL TEXTURE SCATTERING RELATIVE TO THE GEOMETRY (OSL).
+        </p>
+
+        <div class="twentytwenty-container rounded">
+            <img src="/assets/img/projects/directional-texture-scattering/comparison_directional_scatter.png" alt="Directional texture bombing" width="1920" height="1080" class="aligncenter size-full wp-image-2370">
+            <img src="/assets/img/projects/directional-texture-scattering/comparison_random_scatter.png" alt="Random texture bombing" width="1920" height="1080" class="aligncenter size-full wp-image-2368">
+        </div>
+        <figcaption class="figure-caption text-center">Comparison of directional scattering with random scattering. For certain materials, this directionality is extremely important.</figcaption>
+    
+
+        <div class="row mb-7 mb-md-9 mt-10">
+          <div class="col-12 col-md-4 ">
+            
+            <!-- Heading -->
+            <h6 class="text-uppercase text-gray-700 mb-6">
+              INSTALLATION
+            </h6>
+
+            <!-- Link -->
+            <div class="mb-5 mb-md-0">
+              <p class="h5 text-secondary">
+                    Since this set of shaders is written in OSL, they can be loaded in every renderer that supports it. For installation procedures, go to your renderer of choices’ documentation.
+              </p>
+            </div>
+
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            
+            <!-- Heading -->
+            <h6 class="text-uppercase text-gray-700 mb-6">
+              Motivation
+            </h6>
+
+            <!-- Link -->
+            <div class="mb-5 mb-md-0">
+                <p class="h5 text-secondary">
+                    When creating shaders, sometimes random scattering of textures works like a charm and feels very natural. Other times however, there’s a strong directional bias to how the surface features are scattered on an object. A good example is for example a clay shader. Our hands move in very specific ways across the surface in order to shape the sculpture.
+                </p>
+            </div>
+
+          </div>
+          <div class="col-12 col-md-4 text-right border-left-md border-gray-300">
+            
+            <!-- Heading -->
+            <h6 class="text-uppercase text-gray-700 mb-6">
+                DOWNLOAD
+            </h6>
+
+            <p class="h5 text-secondary">
+                I guess I don’t really need to justify 5$. The shader package is available for purchase through Gumroad.
+            </p>
+
+            <script src="https://gumroad.com/js/gumroad.js"></script>
+            <a class="gumroad-button mt-5" href="https://gum.co/directionalscatter" target="_blank">Buy the shader</a>
+        </div>
+        
+        <p class="h5 text-secondary mt-7">
+            Due to the quantization (sampling positions other than the current shading point) used in this shader, we need to bake out some maps in the process. This of course means the model will need usable UV’s.
+        </p>
+        
+
+        <ul class="list-group mt-4">
+            <li class="list-group-item">1. Create a float map indicating where you want the strokes to have a directional aspect. In this example, it is a curvature map. Bake out the curvature map.</li>
+            <li class="list-group-item">2. Use the image_gradient OSL shader to calculate the image gradient (rate of change) and bake that out.</li>
+            <li class="list-group-item">3. Blur the baked out gradients to smooth out the vector field. I tried doing that within the shader but doing this calculation for each ray is just too expensive compared to a simple 2D kernel blur.</li>
+            <li class="list-group-item">4. Use the directional_scatter OSL shader to scatter bitmaps.</li>
+        </ul>
+        
+        </div> <!-- / .row -->
+        <img class="img-fluid rounded" src="/assets/img/projects/directional-texture-scattering/workflow_combined_001.jpg">
+        
+
+        <div class="container mt-10">
+            <div class="row mb-8">
+                <div class="col-sm">
+                    <div class="twentytwenty-container rounded">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_frequency_120.png" alt="frequency=120">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_frequency_200.png" alt="frequency=200">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_frequency_40.jpg" alt="frequency=40">
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="twentytwenty-container rounded">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_magnitude_0.jpg" alt="magnitude=0" width="1920" height="1080" class="aligncenter size-full wp-image-2370">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_min_magnitude_40.jpg" alt="magnitude=40" width="1920" height="1080" class="aligncenter size-full wp-image-2368">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row mb-8">
+                <div class="col-sm">
+                        <div class="twentytwenty-container rounded">
+                            <img src="/assets/img/projects/directional-texture-scattering/comparison_min_magnitude_5.png" alt="min_magnitude=5" width="1920" height="1080" class="aligncenter size-full wp-image-2370">
+                            <img src="/assets/img/projects/directional-texture-scattering/comparison_min_magnitude_0.png" alt="min_magnitude=0" width="1920" height="1080" class="aligncenter size-full wp-image-2368">
+                        </div>
+                </div>
+                <div class="col-sm">
+                    <div class="twentytwenty-container rounded">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_min_value_0.png" alt="min_value=0" width="1920" height="1080" class="aligncenter size-full wp-image-2370">
+                        <img src="/assets/img/projects/directional-texture-scattering/comparison_min_value_1.png" alt="min_value=1" width="1920" height="1080" class="aligncenter size-full wp-image-2368">
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>

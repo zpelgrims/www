@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+    "pageTitle": "Project - Shaders.xyz"
+    })
+  </head>
+  <body class="pt-10 pt-md-0" style="overflow: visible;">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+    "classList": "navbar-light fixed-top bg-white border-bottom",
+    "type": "fluid"
+    })
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container-fluid px-md-0">
+      <div class="row justify-content-between no-gutters mx-md-0">
+        <div class="col-12 col-md-4 position-md-sticky d-flex align-items-center vh-md-100 mx-auto" style="top: 0;">
+
+          <!-- Sidebar -->
+          <aside class="flex-grow-1 py-8 py-md-10">
+
+            <h2>
+              Shaders.xyz
+            </h2>
+
+            <!-- Text -->
+            <p class="font-size-md mb-7 text-muted">
+                In 2017/2018 I ran a shading community website that focused on monthly material challenges, trying to match a reference surface as closely as we could under controlled lighting conditions. </br></br>
+                Here’s a few of my own entries, as posted on the forums.
+            </p>
+
+            <!-- List group -->
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+
+                <!-- Heading -->
+                <h6 class="d-flex mb-0 text-uppercase">
+                  Year <span class="ml-auto">2017/2018</span>
+                </h6>
+
+              </li>
+            </ul>
+
+          </aside>
+
+        </div>
+        <div class="col-12 col-md-7">
+
+          <!-- Images -->
+          
+
+          <section class="pt-md-10 mt-6">
+            <h4 class="mb-5">Beer Foam Shader</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                I started not so procedural, placing spheres on a plane looking at the distribution in the reference and extracted a displacement map from that. This is easy, I just apply a y-axis black and white ramp projection to get values between 0-1 and render it out from the top camera with a surfaceshader. </br></br>
+                I did the same for the small bubbles, although I made those tileable since there have to be a ton of them. I also used some noise procedurals for the smaller bubbles.
+            </p>
+            <div class="container">
+                <div class="row mb-8">
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/shadersxyz/a06er4fgh8rta6ekbw9fvt6ypr0gh99h.png" alt="...">
+                    </div>
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/shadersxyz/y13fyhrzs372chdw7puc1fz6kb416e9v.png" alt="...">
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <p class="font-size-md mr-5 mb-7 text-muted"> 
+                I went with a volume + spec layer approach. The volume has the same displacement setup as the spec layer, only with inverted bubbles. I tried using 2 spec lobes, one for the inside of the bubble and one for the outside, but this didn't really work. </br></br>
+                For a long time with this challenge I struggled using the volume render times. I needed 10+ bounces to get enough light to scatter and it just took too long. In the end I ended up using 1 volume bounce with a little bit of volume emission. It's a dirty cheat that in this case doesn't look too different from the full scattering. It also cut my rendertime by about 6 times. Once I had figured this out my iterations were a lot faster and better.
+            </p>
+
+            <div class="container">
+                <div class="row mb-8">
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/shadersxyz/2tmmydgxm6ry4dza84qjr165t5avzsas.png" alt="...">
+                    </div>
+                    <div class="col-sm">
+                        <img class="img-fluid" src="assets/img/projects/shadersxyz/vyo0jbbzsp114ei8q1u6ezo1xrns0dum.png" alt="...">
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <img class="img-fluid mb-12" src="assets/img/projects/shadersxyz/zeno_pelgrims_challenge_05_foam_wip_009.jpg" alt="...">
+
+            <h4 class="mb-5">Chipped Paint Shader</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                All of the masking is procedural. The paint chipping is done by remapping a voronoi noise with a fractal, so at certain points the cracks are wider and at certain points is thinner. I used multiple copies of the same base object combined with opacity mapping to achieve the different layers of the object. </br></br>
+
+                This achieved much more satisfying results than just using displacement variations since there is correct shadowing. From there on it's just additive layering of displacement maps, so every layer takes the displacement of the previous layer + it's own. The individual layers are really simple, and the results is quite nicely complex.
+            </p>
+
+            <img class="img-fluid" src="assets/img/projects/shadersxyz/l3eo7dcjny6v00xqany23gew8meb7ypi.jpg" alt="...">
+            <img class="img-fluid mb-12" src="assets/img/projects/shadersxyz/shadersxyz_challenge_06_metal_wip_0012_05.jpg" alt="...">
+
+
+            <h4 class="mb-5">Snow Shader</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                Using Arnold & alshaders. Purely surface shaders this time, next up I want to try with a combination of a surface and a volume. The setup is pretty simple. The main surface is an alSurface shader, using sss and two specular lobes. The first lobe has an alflake material, for the odd high intensity specular highlights. The second lobe is much broader and helps define the volumes of the geometry.</br></br>
+
+                The displacement is a combination of a really random displacement map of some ground - for the big shapes, and finer fractals layered on top. I also duplicated the geometry, using the same base displacement but with another fractal displacment layered on top. Then I pushed it in slightly, so it only sticks out of the surface in small little blocks. I made this more of a very simple ice-like material that doesn't cast shadows. Key to getting a nice feel to the image was using a lot of ray bounces.</br></br>
+                
+                The dropoff point after which I couldn't see a difference anymore was about 10 diffuse bounces. Due to the directional sss model, it took about an hour to clear up the SSS noise.</br></br>
+                
+                There's a bit of post work on the image - some bloom and glint and chromatic aberration to help it sell more as a photograph.
+            </p>
+
+            <img class="img-fluid" src="assets/img/projects/shadersxyz/dj7f8n05atj2uawdu5jaq9bwa29kkmho.png" alt="...">
+            <img class="img-fluid mb-12" src="assets/img/projects/shadersxyz/snowball_final_02.jpg" alt="...">
+
+            <h4 class="mb-5">Retroreflector (Traffic cone) Shader</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                As you can probably extract from the name, retroreflectors are surfaces that reflect light in exactly the same direction as it came from. Here's my entry, super heavily inspired by the work of @anthonypilon. I decided to go for an approach which tweaks the normals of the flakes to the camera position, instead of trying with geometry. Using geometry, the effect was really simple to get but when trying to wrap that geo around the model, the cubes got skewed too much and they lost their retroreflective property. I couldn't see a way around this, so bsdf approach it was. There's plenty wrong with my try, but I can't exaggerate how much I learned with this one. For now, here's my final images. Arnold as usual.
+            </p>
+
+            <img class="img-fluid" src="assets/img/projects/shadersxyz/qolixcxebcuil9ffbe7m8a0f9k4q7fln.png" alt="...">
+            <img class="img-fluid mb-12" src="assets/img/projects/shadersxyz/4uud4th2qk42k9xbvv6w0p0ksicemnzg.png" alt="...">
+            
+
+            <h4 class="mb-5">Procedural Metal Welding Shader</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                This is one I never finished, I created a prototype but then never had time to finish it up & adjust the code so it can fit into any pipeline. I’ve attached the OSL code just in case anyone is curious.</br></br>
+                I devised a little algorithm to calculate the displacement of the weld points.
+                First I generate curves from edge loop and resample with point count equal to welding frequency. Then:
+            </p>
+            
+            
+
+            <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// - For every shading point:</span>
+<span style="color: #0099FF; font-style: italic">// -- Calculate the distance to every curve point</span>
+<span style="color: #0099FF; font-style: italic">// -- Compare distance to user-set welding radius to determine displacement amount (could use a ramp to look up a certain value) </span>
+<span style="color: #0099FF; font-style: italic">// -- If distance to point N is smallest and if distance to point N+1 is also within the radius: </span>
+<span style="color: #0099FF; font-style: italic">// ---- Add displacements of both lookups of N and N+1</span>
+
+<span style="color: #007788; font-weight: bold">float</span> <span style="color: #CC00FF">rand</span>(<span style="color: #007788; font-weight: bold">float</span> n){
+    <span style="color: #006699; font-weight: bold">return</span> sin(n) <span style="color: #555555">*</span> <span style="color: #FF6600">43758.5453123</span> <span style="color: #555555">-</span> floor(sin(n) <span style="color: #555555">*</span> <span style="color: #FF6600">43758.5453123</span>);
+}
+
+shader <span style="color: #CC00FF">weld</span>(
+    <span style="color: #007788; font-weight: bold">float</span> radius <span style="color: #555555">=</span> <span style="color: #FF6600">0.1</span>,
+    <span style="color: #007788; font-weight: bold">float</span> disp_height <span style="color: #555555">=</span> <span style="color: #FF6600">1.0</span>,
+    vector distort <span style="color: #555555">=</span> vector(<span style="color: #FF6600">0</span>),
+    <span style="color: #007788; font-weight: bold">float</span> burn_radius <span style="color: #555555">=</span> <span style="color: #FF6600">1.0</span>,
+
+    output vector disp_rand_burn <span style="color: #555555">=</span> vector(<span style="color: #FF6600">0</span>)
+)
+{
+    <span style="color: #007788; font-weight: bold">float</span> x[<span style="color: #FF6600">63</span>] <span style="color: #555555">=</span> {}; <span style="color: #0099FF; font-style: italic">// manually enter x coords here</span>
+    <span style="color: #007788; font-weight: bold">float</span> y[<span style="color: #FF6600">63</span>] <span style="color: #555555">=</span> {}; <span style="color: #0099FF; font-style: italic">// manually enter y coords here</span>
+    <span style="color: #007788; font-weight: bold">float</span> z[<span style="color: #FF6600">63</span>] <span style="color: #555555">=</span> {}; <span style="color: #0099FF; font-style: italic">// manually enter z coords here</span>
+    <span style="color: #007788; font-weight: bold">float</span> distances[<span style="color: #FF6600">63</span>];
+    <span style="color: #007788; font-weight: bold">int</span> min_dist_cv <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+
+    vector shading_pos <span style="color: #555555">=</span> P;
+    <span style="color: #007788; font-weight: bold">float</span> min_dist <span style="color: #555555">=</span> <span style="color: #FF6600">9999999999.0</span>;
+    string input_tex <span style="color: #555555">=</span> <span style="color: #CC3300">&quot;C:/ZENO_2019/projects/shaders_xyz/challenge_10_weld/src/weld_05.tiff&quot;</span>;
+
+    <span style="color: #006699; font-weight: bold">for</span> (<span style="color: #007788; font-weight: bold">int</span> i <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>; i <span style="color: #555555">&lt;</span> <span style="color: #FF6600">62</span>; i<span style="color: #555555">++</span>){
+        point pos <span style="color: #555555">=</span> point(x[i], y[i], z[i]);
+        pos <span style="color: #555555">+=</span> distort;
+
+        <span style="color: #0099FF; font-style: italic">// find distance between two points</span>
+        <span style="color: #007788; font-weight: bold">float</span> distance <span style="color: #555555">=</span> sqrt((P[<span style="color: #FF6600">0</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">0</span>])<span style="color: #555555">*</span>(P[<span style="color: #FF6600">0</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">0</span>]) <span style="color: #555555">+</span> 
+                              (P[<span style="color: #FF6600">1</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">1</span>])<span style="color: #555555">*</span>(P[<span style="color: #FF6600">1</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">1</span>]) <span style="color: #555555">+</span>
+                              (P[<span style="color: #FF6600">2</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">2</span>])<span style="color: #555555">*</span>(P[<span style="color: #FF6600">2</span>] <span style="color: #555555">-</span> pos[<span style="color: #FF6600">2</span>]) );
+
+        distances[i] <span style="color: #555555">=</span> distance;
+
+        <span style="color: #006699; font-weight: bold">if</span> (distance <span style="color: #555555">&lt;</span> min_dist){
+            min_dist <span style="color: #555555">=</span> distance;
+            min_dist_cv <span style="color: #555555">=</span> i;
+        }
+    }
+
+    <span style="color: #006699; font-weight: bold">if</span> (distances[min_dist_cv] <span style="color: #555555">&lt;</span> burn_radius){
+        disp_rand_burn[<span style="color: #FF6600">2</span>] <span style="color: #555555">=</span> <span style="color: #FF6600">1.0</span> <span style="color: #555555">-</span> (distances[min_dist_cv] <span style="color: #555555">/</span> burn_radius);
+    }
+
+    <span style="color: #0099FF; font-style: italic">// int seed = 8;</span>
+
+    <span style="color: #006699; font-weight: bold">if</span> ((min_dist <span style="color: #555555">&lt;</span> radius)){
+        <span style="color: #007788; font-weight: bold">float</span> min_dist_norm <span style="color: #555555">=</span> min_dist<span style="color: #555555">/</span>radius;
+        <span style="color: #007788; font-weight: bold">float</span> disp_lookup <span style="color: #555555">=</span> texture(input_tex, min_dist_norm, <span style="color: #FF6600">0.0</span>);
+        disp_rand_burn[<span style="color: #FF6600">0</span>] <span style="color: #555555">+=</span> disp_lookup;
+        disp_rand_burn[<span style="color: #FF6600">1</span>] <span style="color: #555555">=</span> rand(min_dist_cv<span style="color: #555555">/</span><span style="color: #007788; font-weight: bold">float</span>(<span style="color: #FF6600">62</span>));
+
+        <span style="color: #006699; font-weight: bold">if</span> (min_dist_cv <span style="color: #555555">&lt;</span> <span style="color: #FF6600">62</span> <span style="color: #555555">&amp;&amp;</span> (distances[min_dist_cv<span style="color: #555555">+</span><span style="color: #FF6600">1</span>] <span style="color: #555555">&lt;</span> radius)){
+            <span style="color: #007788; font-weight: bold">float</span> min_dist_1_norm <span style="color: #555555">=</span> distances[min_dist_cv<span style="color: #555555">+</span><span style="color: #FF6600">1</span>]<span style="color: #555555">/</span>radius;
+            <span style="color: #007788; font-weight: bold">float</span> disp_lookup <span style="color: #555555">=</span> texture(input_tex, min_dist_1_norm, <span style="color: #FF6600">0.0</span>);
+            disp_rand_burn[<span style="color: #FF6600">0</span>] <span style="color: #555555">+=</span> disp_lookup;
+        }
+
+        <span style="color: #006699; font-weight: bold">if</span> (min_dist_cv <span style="color: #555555">&gt;</span> <span style="color: #FF6600">0</span> <span style="color: #555555">&amp;&amp;</span> (distances[min_dist_cv<span style="color: #555555">-</span><span style="color: #FF6600">1</span>] <span style="color: #555555">&lt;</span> radius)){
+            <span style="color: #007788; font-weight: bold">float</span> min_dist_2_norm <span style="color: #555555">=</span> distances[min_dist_cv<span style="color: #555555">-</span><span style="color: #FF6600">1</span>]<span style="color: #555555">/</span>radius;
+            <span style="color: #007788; font-weight: bold">float</span> disp_lookup <span style="color: #555555">=</span> texture(input_tex, min_dist_2_norm, <span style="color: #FF6600">0.0</span>);
+            disp_rand_burn[<span style="color: #FF6600">0</span>] <span style="color: #555555">+=</span> disp_lookup;
+        }
+    }
+
+    disp_rand_burn[<span style="color: #FF6600">0</span>] <span style="color: #555555">=</span> (disp_rand_burn[<span style="color: #FF6600">0</span>]<span style="color: #555555">/</span><span style="color: #FF6600">2.0</span>) <span style="color: #555555">*</span> disp_height;
+
+}
+</pre></div>
+
+
+
+
+            <img class="img-fluid mb-12" src="assets/img/projects/shadersxyz/1556420218-20459-zenopelgrims-shadersxyz-challenge-10-welding-002.png" alt="...">
+            
+
+            <h4 class="mb-5">Bread Shader (unfinished)</h4>
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                This was an insanely hard challenge, and I definitely didn’t achieve the look I wanted to.. I’ll try again in a year or 5. (Hindsight; this was before randomwalk SSS models!) </br></br>
+
+                The soft area is procedural geometry made through volumes in houdini, then meshed. The current node graph is straightforward, I just scatter some points in the geometry, use a few of those to calculate a voronoi, combine a few voronois, and then run everything through a custom deformer to create the swirly effect. Then I convert the vdb volume to a polygon mesh to render it. (All to avoid having to raymarch volumes at rendertime). The only interesting parts are the volume wrangle and point wrangle nodes.
+            </p>
+
+            <img class="img-fluid" src="assets/img/projects/shadersxyz/1550012222-666945-houdini-opengl-01.png" alt="...">
+            <img class="img-fluid mb-5" src="assets/img/projects/shadersxyz/1549990233-734243-breado-07-2.png" alt="...">
+
+
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                The volume wrangle code, this is to calculate a custom voronoi (see my previous post with the .osl shader) from a given point cloud:
+            </p>
+
+            <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">int</span> handle <span style="color: #555555">=</span> pcopen(<span style="color: #FF6600">1</span>, <span style="color: #CC3300">&quot;P&quot;</span>, <span style="color: #AA0000; background-color: #FFAAAA">@</span>P, <span style="color: #FF6600">10.0</span>, <span style="color: #FF6600">5</span>);
+<span style="color: #007788; font-weight: bold">float</span> md <span style="color: #555555">=</span> <span style="color: #FF6600">10000.0</span>;
+<span style="color: #007788; font-weight: bold">float</span> lMd <span style="color: #555555">=</span> md;
+<span style="color: #007788; font-weight: bold">float</span> lnDist;
+vector mo;
+<span style="color: #007788; font-weight: bold">float</span> smoothing <span style="color: #555555">=</span> <span style="color: #FF6600">0.05</span>;
+
+<span style="color: #0099FF; font-style: italic">// loop over every point</span>
+<span style="color: #006699; font-weight: bold">while</span>(pciterate(handle) <span style="color: #555555">&gt;</span> <span style="color: #FF6600">0</span>){
+
+    <span style="color: #0099FF; font-style: italic">// get P</span>
+    vector P;
+    <span style="color: #007788; font-weight: bold">int</span> success <span style="color: #555555">=</span> pcimport(handle, <span style="color: #CC3300">&quot;P&quot;</span>, P);
+
+    vector r <span style="color: #555555">=</span> <span style="color: #AA0000; background-color: #FFAAAA">@</span>P <span style="color: #555555">-</span> P;
+    <span style="color: #007788; font-weight: bold">float</span> d <span style="color: #555555">=</span> dot(r, r);
+
+
+    <span style="color: #006699; font-weight: bold">if</span> (d <span style="color: #555555">&lt;</span> md){
+        md <span style="color: #555555">=</span> d;
+        mo <span style="color: #555555">=</span> r;        
+    }
+}
+
+<span style="color: #007788; font-weight: bold">int</span> handle2 <span style="color: #555555">=</span> pcopen(<span style="color: #FF6600">1</span>, <span style="color: #CC3300">&quot;P&quot;</span>, <span style="color: #AA0000; background-color: #FFAAAA">@</span>P, <span style="color: #FF6600">10.0</span>, <span style="color: #FF6600">5</span>);
+<span style="color: #0099FF; font-style: italic">// loop over every point</span>
+<span style="color: #006699; font-weight: bold">while</span>(pciterate(handle2) <span style="color: #555555">&gt;</span> <span style="color: #FF6600">0</span>){
+
+    <span style="color: #0099FF; font-style: italic">// get P</span>
+    vector P;
+    <span style="color: #007788; font-weight: bold">int</span> success <span style="color: #555555">=</span> pcimport(handle2, <span style="color: #CC3300">&quot;P&quot;</span>, P);
+
+
+    vector r <span style="color: #555555">=</span> <span style="color: #AA0000; background-color: #FFAAAA">@</span>P <span style="color: #555555">-</span> P <span style="color: #555555">-</span> mo;
+    <span style="color: #0099FF; font-style: italic">//r *= 1-smoothing;</span>
+
+    <span style="color: #006699; font-weight: bold">if</span> (dot(r, r) <span style="color: #555555">&gt;</span> <span style="color: #FF6600">0.00001</span>){
+        lnDist <span style="color: #555555">=</span> dot(mo <span style="color: #555555">+</span> r<span style="color: #555555">*</span><span style="color: #FF6600">0.5</span>, normalize(r));
+
+        <span style="color: #0099FF; font-style: italic">// polynomial smooth</span>
+        <span style="color: #007788; font-weight: bold">float</span> a <span style="color: #555555">=</span> lMd;
+        <span style="color: #007788; font-weight: bold">float</span> b <span style="color: #555555">=</span> lnDist;
+        <span style="color: #007788; font-weight: bold">float</span> c <span style="color: #555555">=</span> (lnDist<span style="color: #555555">*</span><span style="color: #FF6600">0.5</span> <span style="color: #555555">+</span> <span style="color: #FF6600">0.5</span>)<span style="color: #555555">*</span>smoothing;
+        <span style="color: #007788; font-weight: bold">float</span> f <span style="color: #555555">=</span> max(<span style="color: #FF6600">0.</span>, <span style="color: #FF6600">1.</span> <span style="color: #555555">-</span> abs(b <span style="color: #555555">-</span> a)<span style="color: #555555">/</span>c);
+        lMd <span style="color: #555555">=</span> min(a, b) <span style="color: #555555">-</span> c<span style="color: #555555">*</span><span style="color: #FF6600">.25</span><span style="color: #555555">*</span>f<span style="color: #555555">*</span>f;
+    }
+
+}
+
+<span style="color: #AA0000; background-color: #FFAAAA">@</span>distance <span style="color: #555555">=</span> <span style="color: #FF6600">1.0</span> <span style="color: #555555">-</span> max(lMd, <span style="color: #FF6600">0.0</span>);
+</pre></div>
+
+            <p class="font-size-md mr-5 mb-7 text-muted">
+                Then I run the geometry through a custom deformer (point wrangle node) to create the "swirling" effect. Essentially it pushes the point outwards from the center of the bread (more in the middle to none at the edges). I remap the translation distance of the points to the normalized distance between the point position and the distance of the edge of the bread to the center of the bread.
+            </p>
+
+            <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">float</span> PyOrig <span style="color: #555555">=</span> <span style="color: #AA0000; background-color: #FFAAAA">@</span>P.y;
+vector c <span style="color: #555555">=</span> {<span style="color: #FF6600">0.0</span>, <span style="color: #FF6600">0</span>, <span style="color: #555555">-</span><span style="color: #FF6600">10.0</span>};
+vector clampedP <span style="color: #555555">=</span> <span style="color: #AA0000; background-color: #FFAAAA">@</span>P; clampedP.y <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+vector position <span style="color: #555555">=</span> clampedP;
+position <span style="color: #555555">-=</span> c;
+<span style="color: #007788; font-weight: bold">float</span> magn <span style="color: #555555">=</span> length(position);
+
+vector rayD <span style="color: #555555">=</span> (clampedP <span style="color: #555555">-</span> c) <span style="color: #555555">*</span> <span style="color: #FF6600">1000</span>;
+rayD.y <span style="color: #555555">=</span> <span style="color: #FF6600">0.0</span>;
+vector hittP, hitUVW;
+i<span style="color: #AA0000; background-color: #FFAAAA">@</span>hitPrim <span style="color: #555555">=</span> intersect(<span style="color: #FF6600">1</span>, clampedP, rayD, hittP, hitUVW);
+<span style="color: #007788; font-weight: bold">float</span> distanceToEdge <span style="color: #555555">=</span> length(hittP <span style="color: #555555">-</span> c);
+
+
+<span style="color: #007788; font-weight: bold">float</span> low1 <span style="color: #555555">=</span> <span style="color: #FF6600">0.0</span>;
+<span style="color: #007788; font-weight: bold">float</span> low2 <span style="color: #555555">=</span> <span style="color: #FF6600">0.0</span>;
+<span style="color: #007788; font-weight: bold">float</span> high1 <span style="color: #555555">=</span> distanceToEdge;
+<span style="color: #007788; font-weight: bold">float</span> high2 <span style="color: #555555">=</span> <span style="color: #FF6600">1.0</span>;
+<span style="color: #007788; font-weight: bold">float</span> remapped <span style="color: #555555">=</span> low2 <span style="color: #555555">+</span> (magn <span style="color: #555555">-</span> low1) <span style="color: #555555">*</span> (high2 <span style="color: #555555">-</span> low2) <span style="color: #555555">/</span> (high1 <span style="color: #555555">-</span> low1);
+
+position <span style="color: #555555">=</span> position <span style="color: #555555">+</span> position<span style="color: #555555">*</span>(<span style="color: #FF6600">1</span><span style="color: #555555">-</span>remapped);
+<span style="color: #AA0000; background-color: #FFAAAA">@</span>P <span style="color: #555555">=</span> position <span style="color: #555555">+</span> c;
+<span style="color: #AA0000; background-color: #FFAAAA">@</span>P.y <span style="color: #555555">=</span> PyOrig;
+</pre></div>
+
+
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+    "classList": "bg-light"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+
+  </body>
+</html>
