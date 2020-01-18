@@ -1,6 +1,3 @@
-# LANDKIT #
-
-Landkit Theme by Good Themes.
 
 ### Documentation ###
 
@@ -13,11 +10,3 @@ The steps to compile and get started with development are covered in detail in d
 - npm install -g gulp-cli
 - npm install
 - gulp
-
-### Design Files ###
-
-We provide an "unofficial" Landkit Figma file for you to play with. Learn more about it at http://landkit.goodthemes.co/docs/figma.html and view/download it here: https://www.figma.com/file/o8Z7FIXUYW08Rl3AfFK7iD/LandKit-1.1.1-Distributed.
-
-### Support ###
-
-Good Themes is happy to provide support for issues. Shoot us an email at support@goodthemes.co and we'll get you squared away.
