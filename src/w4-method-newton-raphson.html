@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+    "pageTitle": "Implementation of 'The W4 method: a new multi-dimensional root-finding scheme for nonlinear systems of equations'"
+    })
+  </head>
+  <body class="pt-10 pt-md-0" style="overflow: visible;">
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+    "classList": "navbar-light fixed-top bg-white border-bottom",
+    "type": "fluid"
+    })
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container-fluid px-md-0">
+      <div class="row justify-content-between no-gutters mx-md-0">
+        <div class="col-12 col-md-4 position-md-sticky d-flex align-items-center vh-md-100 mx-auto" style="top: 0;">
+
+          <!-- Sidebar -->
+          <aside class="flex-grow-1 py-8 py-md-10">
+
+            <h2>
+              Implementation of 'The W4 method: a new multi-dimensional root-finding scheme for nonlinear systems of equations'
+            </h2>
+
+            <!-- Text -->
+            <p class="font-size-md mb-7 text-muted">
+                I recently found myself in a situation where the classic newton-raphson method for solving nonlinear systems of equations didn't converge to a result. Then I stumbled across this new method: <a href="https://arxiv.org/pdf/1809.04495.pdf">https://arxiv.org/pdf/1809.04495.pdf</a>, but did not find an implementation online. So here's my try. </br></br>
+                The equations I ended up using (UL-W4) come from appendix section D.2 from this paper by the same authors: <a href="https://arxiv.org/pdf/1809.04358.pdf">https://arxiv.org/pdf/1809.04358.pdf</a> </br></br>
+                In general, it takes more iterations to converge. But there's a much wider range of initial guesses that will converge, so it is more reliable. For all details/math, just have a look at the paper. They do a better job than I ever will.
+              </p>
+
+            <!-- List group -->
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+
+                <!-- Heading -->
+                <h6 class="d-flex mb-0 text-uppercase">
+                  Year <span class="ml-auto">2020</span>
+                </h6>
+
+              </li>
+            </ul>
+
+          </aside>
+
+        </div>
+        <div class="col-12 col-md-7">
+
+          <!-- Images -->
+          <section class="pt-md-10 mt-10">
+            <p class="font-size-md mb-5 text-muted">The equation for newton-raphson iterations looks like this: </p>
+            <img class="mx-auto d-block mb-10" src="https://quicklatex.com/cache3/1a/ql_3f2ba55c340c11206bb5b8ca3838ff1a_l3.png">
+            <p class="font-size-md mb-5 text-muted">First let's consider what an implementation of a 2-dimensional Newton-Raphson method might look like:</p>
+            <iframe
+              src="https://carbon.now.sh/embed?bg=rgba(255%2C255%2C255%2C1)&t=one-dark&wt=none&l=text%2Fx-c%2B%2Bsrc&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=false&pv=56px&ph=56px&ln=false&fl=1&fm=Hack&fs=14px&lh=133%25&si=false&es=1x&wm=false&code=%2523include%2520%2522..%252F..%252FEigen%252FEigen%252FCore%2522%250A%2523include%2520%2522..%252F..%252FEigen%252FEigen%252FLU%2522%250A%2523include%2520%253Ciostream%253E%250A%250Aint%2520main()%257B%250A%2520%2520%2520%2520double%2520eps%2520%253D%25201e-4%253B%250A%250A%2520%2520%2520%2520double%2520x%2520%253D%25200.1%253B%250A%2520%2520%2520%2520double%2520y%2520%253D%25201.0%253B%250A%2520%2520%2520%2520double%2520f1%2520%253D%25201e9%253B%250A%2520%2520%2520%2520double%2520f2%2520%253D%25201e9%253B%250A%250A%2520%2520%2520%2520unsigned%2520int%2520count%2520%253D%25200%253B%250A%250A%2520%2520%2520%2520while%2520(std%253A%253Aabs(f1)%2520%253E%2520eps%2520%2526%2526%2520std%253A%253Aabs(f2)%2520%253E%2520eps)%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522count%2520%253A%2520%2522%2520%253C%253C%2520count%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520f1%2520%253D%2520x*x%2520-%252010*x%2520%252B%2520y*y%2520-%252010*y%2520%252B%252034%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520f2%2520%253D%2520x*x%2520-%252022*x%2520%252B%2520y*y%2520-%252010*y%2520%252B%2520130%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522f1%253A%2520%2522%2520%253C%253C%2520f1%2520%253C%253C%2520%2522%252C%2520f2%253A%2520%2522%2520%253C%253C%2520f2%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520A%2520%253D%25202*x%2520-%252010%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520B%2520%253D%25202*y%2520-%252010%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520C%2520%253D%25202*x%2520-%252022%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520D%2520%253D%25202*y%2520-%252010%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AMatrix2d%2520J%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J%2520%253C%253C%2520A%252C%2520B%252C%2520C%252C%2520D%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AMatrix2d%2520J_inv%2520%253D%2520J.inverse().eval()%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520f3(f1%252C%2520f2)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520T(x%252C%2520y)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520E%2520%253D%2520T%2520-%2520J_inv%2520*%2520f3%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520x%2520%253D%2520E(0)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520y%2520%253D%2520E(1)%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522x%252C%2520y%253A%2520%2522%2520%253C%253C%2520x%2520%253C%253C%2520%2522%252C%2520%2522%2520%253C%253C%2520y%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%252B%252Bcount%253B%250A%250A%2520%2520%2520%2520%257D%250A%257D"
+              style="width:1024px; height:1000px; border:0; overflow:hidden;"
+              sandbox="allow-scripts allow-same-origin">
+            </iframe>
+            
+            <p class="font-size-md mb-5 text-muted">For the W4 method, the key differences are that instead of the inverse jacobian, we use the inverse of the upper- and lower triangular jacobians. The p-term is calculated the iteration before the current one. This makes it fundamentally quite different from newton-raphson. This is described in the following equation:</p>
+            <img class="mx-auto d-block mb-5" src="https://quicklatex.com/cache3/99/ql_8fdd50e7d585312a41636bea6131a499_l3.png">
+            <p class="font-size-md mb-5 text-muted">However, I used the following equation, which seems to be a better fit for my 2-dimensional case (omitting the diagonal matrix term)</p>
+            <img class="mx-auto d-block mb-5" src="https://quicklatex.com/cache3/3f/ql_35f5515d6eea9283f18c9b97d0d3613f_l3.png">
+            <p class="font-size-md mb-5 text-muted">Finally, this is what a possible implementation would look like.</p>
+
+            <iframe
+              src="https://carbon.now.sh/embed?bg=rgba(255%2C255%2C255%2C0)&t=one-dark&wt=none&l=text%2Fx-c%2B%2Bsrc&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=false&pv=56px&ph=56px&ln=false&fl=1&fm=Hack&fs=14px&lh=133%25&si=false&es=1x&wm=false&code=%2523include%2520%2522..%252F..%252FEigen%252FEigen%252FCore%2522%250A%2523include%2520%2522..%252F..%252FEigen%252FEigen%252FLU%2522%250A%2523include%2520%253Ciostream%253E%250A%250Aint%2520main()%257B%250A%2520%2520%2520%2520double%2520eps%2520%253D%25201e-4%253B%250A%2520%2520%2520%2520Eigen%253A%253AVector2d%2520p(0.0%252C%25200.0)%253B%250A%250A%2520%2520%2520%2520double%2520x%2520%253D%25200.1%253B%250A%2520%2520%2520%2520double%2520y%2520%253D%25201.0%253B%250A%2520%2520%2520%2520double%2520f1%2520%253D%25201e9%253B%250A%2520%2520%2520%2520double%2520f2%2520%253D%25201e9%253B%250A%250A%2520%2520%2520%2520unsigned%2520int%2520count%2520%253D%25200%253B%250A%250A%2520%2520%2520%2520while%2520(std%253A%253Aabs(f1)%2520%253E%2520eps%2520%2526%2526%2520std%253A%253Aabs(f2)%2520%253E%2520eps)%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522count%2520%253A%2520%2522%2520%253C%253C%2520count%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520f1%2520%253D%2520x*x%2520-%252010*x%2520%252B%2520y*y%2520-%252010*y%2520%252B%252034%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520f2%2520%253D%2520x*x%2520-%252022*x%2520%252B%2520y*y%2520-%252010*y%2520%252B%2520130%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522f1%253A%2520%2522%2520%253C%253C%2520f1%2520%253C%253C%2520%2522%252C%2520f2%253A%2520%2522%2520%253C%253C%2520f2%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520A%2520%253D%25202*x%2520-%252010%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520B%2520%253D%25202*y%2520-%252010%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520C%2520%253D%25202*x%2520-%252022%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520double%2520D%2520%253D%25202*y%2520-%252010%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AMatrix2d%2520J%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J%2520%253C%253C%2520A%252C%2520B%252C%2520C%252C%2520D%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AMatrix2d%2520J_U_inv%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J_U_inv%2520%253C%253C%2520J(0%252C0)%2520-J(0%252C1)*J(1%252C0)%252FJ(1%252C1)%252C%2520%2520%2520J(0%252C1)%252C%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%25200.0%252C%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520J(1%252C1)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J_U_inv%2520%253D%2520J_U_inv.inverse().eval()%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AMatrix2d%2520J_L_inv%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J_L_inv%2520%253C%253C%25201.0%252C%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%25200.0%252C%2520%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520J(1%252C0)%252FJ(1%252C1)%252C%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%25201.0%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520J_L_inv%2520%253D%2520J_L_inv.inverse().eval()%253B%250A%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520f3(f1%252C%2520f2)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520T(x%252C%2520y)%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520if%2520(count%2520%253D%253D%25200)%257B%250A%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520%2520p%2520%253D%2520-0.5%2520*%2520J_U_inv%2520*%2520f3%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520%257D%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520Eigen%253A%253AVector2d%2520E%2520%253D%2520T%2520%252B%25200.5%2520*%2520J_L_inv%2520*%2520p%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520p%2520%253D%2520-0.5%2520*%2520J_U_inv%2520*%2520f3%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520x%2520%253D%2520E(0)%253B%250A%2520%2520%2520%2520%2520%2520%2520%2520y%2520%253D%2520E(1)%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520std%253A%253Acout%2520%253C%253C%2520%2522x%252C%2520y%253A%2520%2522%2520%253C%253C%2520x%2520%253C%253C%2520%2522%252C%2520%2522%2520%253C%253C%2520y%2520%253C%253C%2520std%253A%253Aendl%253B%250A%250A%2520%2520%2520%2520%2520%2520%2520%2520%252B%252Bcount%253B%250A%250A%2520%2520%2520%2520%257D%250A%257D"
+              style="width:1024px; height:1300px; border:0; overflow:hidden;"
+              sandbox="allow-scripts allow-same-origin">
+            </iframe>
+
+            <p class="font-size-md mb-5 text-muted">Biggest takeaway? There's a lot of extra pages in math papers.</p>
+
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+    "classList": "bg-light"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+
+  </body>
+</html>
