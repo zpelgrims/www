@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "Arnold Brushstroke shader (c++/osl)"
+    })
+  </head>
+  <body class="bg-light">
+
+<!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+            IMPRESSIONISM IN PATH TRACERS
+        </p>
+
+        <p class="font-size-md mb-7 mb-md-6 text-secondary">
+            For a while I've been thinking how we can use all the goodies from path tracers, such as bounced light, soft shadows and estabilished animation pipelines, but use it to make impressionistic images instead. Path traced images often suffer from perfectness. Reference paintings contain a lot of character that can be lost in the pathtracing process.
+        </p>
+        <p class="font-size-md mb-7 mb-md-6 text-secondary">
+            It turns out that we can actually do this in a temporally stable manner.
+        </p>
+
+        <div class="alert alert-primary" role="alert">
+        <strong>Note:</strong> I'd love to cg-supe a project with this art style/technique. Contact me if interested.
+        </div>
+
+        <hr class="border-gray-300 my-6">
+
+        <iframe width="100%" height="550" src="https://www.youtube.com/embed/UfKJ14eF7Ok" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <hr class="border-gray-300 my-6">
+
+        <h2 class="mt-8 mb-8">Key elements to simulate</h2>
+        
+        <ul class="list-group">
+        <li class="list-group-item">1. <strong>Quantized patches of color</strong>, aka brushstrokes. Disregarding the mixing of colours, the basic principle of painting is to put some colour on your brush and put it on the canvas.</li>
+        <li class="list-group-item">2. <strong>Break up object edges</strong>. Nothing shouts "hey i'm 3d" as much as a perfect object edge.</li>
+        <li class="list-group-item">3. <strong>Correct layering of brushstrokes</strong>. Painters often start with big brushstrokes and detail selectively with small brushstrokes.</li>
+        <li class="list-group-item">4. <strong>Correct orientation of the brushstrokes.</strong></li>
+        </ul>
+
+        <p class="h5 text-secondary mt-6 mb-2">
+            The answer to this ended up being a rendered <strong>point cloud as camera-facing cards</strong>. Ofcourse not straight out of the box, so let's dive into the details:
+        </p>
+
+        <a href="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" alt="...">
+        </a>
+        <figcaption class="figure-caption text-center mb-8">The barebones node setup, the "flow" userdata can be disregarded (custom painted vectors for the snout)</figcaption>
+
+
+        <h2 class="mt-10">Quantized patches of colour</h2>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            I developed a custom c++ shader <code><strong>(quantize)</strong></code> to <strong>sample a singular shading point on the underlying surface, for every shading point per card</strong>. This is possible because we feed the shader userdata per-point. This allows us to take the pathtraced final colour of an underlying object, and transform it to the brushstroke that is on top of it.
+        </p>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            The reality is slightly more complex, but you can imagine the shader shooting a ray from the userdata::worldpos point, in the direction of the userdata::worldvel vector. Then it will return the radiance at the first hit point, which happens to be the point it was spawned at. Since all of the shadingpoints per card do this same lookup, we get the same colour for each shadingpoint on the card.
+        </p>
+        
+        ADD EXPLANATION GRAPHIC
+
+        <h2 class="mt-10">Breaking of object edges</h2>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            This is a significant reason why cards are the right approach. You can really make the object edges look like brushstrokes. The problem actually becomes the inverse. For the big brush stroke layer (base coat), we don't want this to happen since it'd screw up the silhouette! I wrote another c++ shader to handle this <code><strong>(quantize_cut_edge)</strong></code>.
+        </p>
+
+
+       
+        <h2 class="mt-10">Correct layering of brushstrokes</h2>
+
+        <p class="h5 text-secondary mt-2 mb-5">
+            It's important to layer multiple sizes of brushstrokes. Start with a sparse pointcloud with large cards, and layer smaller sets on top to selectively add detail into places where your eye should focus.
+        </p>
+
+        <div class="twentytwenty-container rounded">
+            <img src="../src/assets/img/projects/brushstroke-shader/render_layer1.png" alt="Layer 1">
+            <img src="../src/assets/img/projects/brushstroke-shader/render_layer2.png" alt="Layer 1+2">
+            <img src="../src/assets/img/projects/brushstroke-shader/final_raw.png" alt="Layer 1+2+3">
+        </div>
+        <figcaption class="figure-caption text-center mb-8">Work from large to small strokes</figcaption>
+
+        <h2 class="mt-10">Correct orientation of brushstrokes</h2>
+        
+        <p class="h5 text-secondary mt-2 mb-2">
+            The cards need to aligned to the surface, or a custom direction, in screenspace. To handle this I wrote some OSL <code>(align_uvcoords_to_vec.osl)</code> that takes care of everything. You input the position/direction userdata of the points, it outputs rotated UV coordinates that you can feed into an image.
+        </p>
+
+        <a href="../src/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" class="d-block mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" alt="...">
+        </a>
+        <figcaption class="figure-caption text-center mb-8">To show the automatic surface alignment, I replaced the brushstrokes with some arrows.</figcaption>
+        
+        <p class="h5 text-secondary mt-2 mb-2">
+            See how in the above example I faded out the cards whose supplied vector is perpendicular to the viewing vector? The rotation there is a little bit too fast, so we mask it out. It turns out we can safely do this without much visual impact at all. I supplied another bit of osl for that <code>(facingratio_cam.osl)</code>.
+        </p>
+
+        <p class="h5 text-secondary mt-5 mb-2">
+            If you want to paint a custom direction for the strokes, that's possible too. For example, around the snout of the fox it was key I aligned the brushstrokes so that they follow the colour boundary. That edge needs to be sharp! The same shader is used, only with a different input vector. E.g in Houdini, it's very easy to paint these vectors.
+        </p>
+
+        <a href="../src/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" alt="...">
+        </a>
+        <figcaption class="figure-caption text-center mb-8">The snout needed custom oriented vectors that followed the texture.</figcaption>
+
+        <hr class="border-gray-300 my-6">
+
+        <h2 class="mt-10">Point cloud setup</h2>
+
+
+        <div class='row mb-5'>
+            <div class='col'>
+                <p class="h5 text-secondary mt-5 mb-5">
+                    Looking at the shading node graph you can see the whole workflow relies on 2 simple things.
+                </p>
+        
+                <ul class="list-group">
+                <li class="list-group-item">- Each point holds a world space position <code>(userdata_worldpos)</code>.</li>
+                <li class="list-group-item">- Each point holds a vector, which is the surface normal at which the point originated. <code>(userdata_worldvel)</code></li>
+                </ul>
+
+            </div>
+            <div class='col'>
+                <a href="../src/assets/img/projects/brushstroke-shader/pointcloud.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                    <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/pointcloud.png" alt="...">
+                </a>
+            </div>
+          </div>
+
+          <p class="h5 text-secondary mt-2 mb-6">
+            This is all the "custom setup" to make this work. It's rather straightforward. I used Houdini to generate the points. This can be done in pretty much any software though. I'm simply familiar with Houdini.
+        </p>
+
+          <div class='row mb-2'>
+            <div class='col'>
+                <p class="h5 text-secondary mt-2 mb-2">
+                    The basic idea is as follows: Generate points on a surface. Move the points away from the surface, e.g along the surface normal. Store the vector between this new point and the original point. Also store the new point position.
+                </p>
+
+            </div>
+            <div class='col'>
+                <iframe
+                    src="https://carbon.now.sh/embed?bg=rgba(255%2C255%2C255%2C0)&t=one-dark&wt=none&l=text%2Fx-c%2B%2Bsrc&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=9px&ph=11px&ln=false&fl=1&fm=Hack&fs=13px&lh=133%25&si=false&es=2x&wm=false&code=%252F%252F%2520translate%2520point%2520along%2520surface%2520normal%2520%250A%2540N%2520%253D%2520primuv(1%252C%2520%2522N%2522%252C%2520i%2540sourceprim%252C%2520v%2540sourceprimuv)%253B%250A%2540P%2520%252B%253D%2520%2540N%2520*%2520rand(%2540ptnum)%2520*%2520ch(%2522distance%2522)%253B%250A%250A%252F%252F%2520set%2520userdata%250Av%2540worldPosition%2520%253D%2520v%2540P%253B%250Av%2540worldVelocity%2520%253D%2520v%2540N%253B%250A%250A%252F%252F%2520arnold%2520per-point%2520card%2520size%2520attribute%250A%2540ar_radius%2520%253D%2520fit(rand(%2540ptnum)%252C%25200.0%252C%25201.0%252C%25200.75%252C%25202.0)%253B"
+                    style="width:500px; height:275px; border:0; overflow:hidden;"
+                    sandbox="allow-scripts allow-same-origin">
+                </iframe>
+                <figcaption class="figure-caption text-center mb-8">VEX (point wrangle)</figcaption>
+            </div>
+          </div>
+
+        
+
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            To make the pointcloud render as cards, we need to set an arnold attribute (mode:quad).
+        </p>
+
+
+        <a href="../src/assets/img/projects/brushstroke-shader/points_quads.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_quads.png" alt="...">
+        </a>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            The rendered cards are ONLY visible to camera rays. It doesn't cast shadows, nothing, nada. Just visible to primary rays.
+        </p>
+        <p class="h5 text-secondary mt-2 mb-2">
+            The <code>quantize</code>, <code>quantize_cut_edge</code> shaders have a traceset parameter. Make sure to add that same trace set on any object that should _not_ be included in the sampling process. In this case, that's the points themselves.
+        </p>
+
+        <a href="../src/assets/img/projects/brushstroke-shader/points_visibility.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_visibility.png" alt="...">
+        </a>
+
+
+
+        <p class="h5 text-secondary mt-6 mb-2">
+            At this point I moved away from houdini and did the shading in maya - but there's honestly no good reason for that. Just to show you that you can easily transfer this pointcloud between DCC's using .ass files. Render-settings wise the only thing that stands out is having to deal with a huge number of transparent surfaces. In this example I set the transparency depth to <strong>700</strong>.
+        </p>
+
+        <div class="alert alert-primary" role="alert">
+        <strong>Note:</strong> I've found that the fastest way to work is to light your scene with the brushstrokes disabled. Then you can render out a low-res render, and project that on *all* the objects in the scene as emissive shader. This replaces the monte carlo simulation with a simple texture lookup, speeding up the rendering significantly. This makes it very fast to fine-tune the look of the brushstrokes.
+        </div>
+
+
+        <hr class="border-gray-300 my-6">
+        
+        <h2 class="mt-10">Conclusion</h2>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            The beauty of this technique is that you can start with extremely simple geometry and extremely simple shaders. I think the most exciting prospect of this journey is that <strong>it actually fits into current animation pipelines</strong>. It's temporally stable because we're working with 3D data.
+        </p>
+
+
+        <hr class="border-gray-300 my-6">
+
+        
+        <h2 class="mt-10">Download</h2>
+
+        <div class="row mb-7 mb-md-9 mt-10">
+          <div class="col-12 col-md-4 text-center">
+            <button class="btn btn-primary-soft">1.0-windows-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-primary-soft">1.0-osx-ai5.0.2.0</button>
+          </div>
+          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
+            <button class="btn btn-secondary-soft">Source Code</button>
+            </div>
+        </div>
+        
+        <h2 class="mt-10">Installation</h2>
+
+        <div class="container mt-10">
+            <div class="row mb-8">
+                <div class="col-sm">
+                   <p>MtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUSTY/bin</code></strong></br></br>
+                    <strong class="badge badge-danger-soft"><code>MTOA_TEMPLATES_PATH = $PATH_TO_DUSTY/ae</code></strong></br></br>
+                    It’s also possible to copy the files into your MtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/shaders</code></strong></br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/ae</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/scripts/mtoa/ui/ae</code></strong>
+                    </p>
+                </div>
+                <div class="col-sm">
+                   <p>HtoA</p>
+                   <p class="h5 text-secondary mt-7">
+                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
+                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUST/bin</code></strong></br></br>
+                    It’s also possible to copy the files into your HtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
+                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$HTOA_LOCATION]/arnold/plugins</code></strong></br></br>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        </div> <!-- / .row -->
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>
