@@ -18,7 +18,7 @@
       <div class="container">
 
         <p class="font-size-md text-center mb-7 mb-md-6">
-            IMPRESSIONISM IN PATH TRACERS
+            IMPRESSIONISM IN PATH TRACERS (ARNOLD C++/OSL)
         </p>
 
         <p class="font-size-md mb-7 mb-md-6 text-secondary">
@@ -35,6 +35,31 @@
         <hr class="border-gray-300 my-6">
 
         <iframe width="100%" height="550" src="https://www.youtube.com/embed/UfKJ14eF7Ok" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        
+        <hr class="border-gray-300 my-6">
+        
+        <h2 class="mt-10">Buy these shaders</h2>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            I've included all of the scene files (geo, textures, houdini point cloud setup, maya shader setup, custom c++/osl shaders). You will be able to render out this image yourself. The minimum required arnold core version is 5.3.0.2. The binaries are compiled for windows, osx and linux.
+        </p>
+
+        <p class="h5 text-secondary mt-2 mb-2">
+            It will be possible to pick up the scene files and get going without understanding all the information at the bottom of this page. I just wanted to explain the workflow in case someone wants to replicate it in another renderer.
+        </p>
+
+        <div class="row mt-8 mb-8">
+          <div class="col text-center">
+            <script src="https://gumroad.com/js/gumroad.js"></script>
+            <button class="btn btn-primary-soft"><a href="https://gum.co/WIFvn" target="_blank">Buy this set of shaders</a></button>
+            
+          </div>
+        </div>
+        
+        <div class="twentytwenty-container rounded">
+            <img src="../src/assets/img/projects/brushstroke-shader/final_able_to_render_user_no_shader.jpg" alt="No brushstrokes">
+            <img src="../src/assets/img/projects/brushstroke-shader/final_able_to_render_user.jpg" alt="With brushstrokes">
+        </div>
 
         <hr class="border-gray-300 my-6">
 
@@ -54,7 +79,7 @@
         <a href="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
             <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" alt="...">
         </a>
-        <figcaption class="figure-caption text-center mb-8">The barebones node setup, the "flow" userdata can be disregarded (custom painted vectors for the snout)</figcaption>
+        <figcaption class="figure-caption text-center mb-8">The shader setup, open the node editor in the maya scene to bring this up.</figcaption>
 
 
         <h2 class="mt-10">Quantized patches of colour</h2>
@@ -66,8 +91,6 @@
         <p class="h5 text-secondary mt-2 mb-2">
             The reality is slightly more complex, but you can imagine the shader shooting a ray from the userdata::worldpos point, in the direction of the userdata::worldvel vector. Then it will return the radiance at the first hit point, which happens to be the point it was spawned at. Since all of the shadingpoints per card do this same lookup, we get the same colour for each shadingpoint on the card.
         </p>
-        
-        ADD EXPLANATION GRAPHIC
 
         <h2 class="mt-10">Breaking of object edges</h2>
 
@@ -118,76 +141,106 @@
 
         <h2 class="mt-10">Point cloud setup</h2>
 
+        <div class="alert alert-primary" role="alert">
+        <strong>Note:</strong> The /setup/houdini/pointcloud_setup.hip contains the whole setup.
+        </div>
 
-        <div class='row mb-5'>
-            <div class='col'>
-                <p class="h5 text-secondary mt-5 mb-5">
-                    Looking at the shading node graph you can see the whole workflow relies on 2 simple things.
-                </p>
-        
-                <ul class="list-group">
-                <li class="list-group-item">- Each point holds a world space position <code>(userdata_worldpos)</code>.</li>
-                <li class="list-group-item">- Each point holds a vector, which is the surface normal at which the point originated. <code>(userdata_worldvel)</code></li>
-                </ul>
+        <div class="accordion mt-5 mb-7" id="accordionExample">
+            
 
+            <div class="card">
+              <div class="card-header" id="headingTwo">
+                <h2 class="mb-0">
+                  <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    See setup breakdown
+                  </button>
+                </h2>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                <div class="card-body">
+                    <div class='row mb-5'>
+                        <div class='col'>
+                            <p class="h5 text-secondary mt-5 mb-5">
+                                Looking at the shading node graph you can see the whole workflow relies on 2 simple things.
+                            </p>
+                    
+                            <ul class="list-group">
+                            <li class="list-group-item">- Each point holds a world space position <code>(userdata_worldpos)</code>.</li>
+                            <li class="list-group-item">- Each point holds a vector, which is the surface normal at which the point originated. <code>(userdata_worldvel)</code>
+                            </br>
+                            </br>
+                            There's also a <code>(userdata_flow)</code> node, but that's merely a custom vector that replaces <code>(userdata_worldvel)</code></li>
+                            </ul>
+            
+                        </div>
+                        <div class='col'>
+                            <a href="../src/assets/img/projects/brushstroke-shader/pointcloud.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                                <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/pointcloud.png" alt="...">
+                            </a>
+                        </div>
+                      </div>
+            
+                      <p class="h5 text-secondary mt-2 mb-6">
+                        This is all the "custom setup" to make this work. It's rather straightforward. I used Houdini to generate the points. This can be done in pretty much any software though. I'm simply familiar with Houdini.
+                    </p>
+            
+                      <div class='row mb-2'>
+                        <div class='col'>
+                            <p class="h5 text-secondary mt-2 mb-2">
+                                The basic idea is as follows: Generate points on a surface. Move the points away from the surface, e.g along the surface normal. Store the vector between this new point and the original point. Also store the new point position.
+                            </p>
+            
+                        </div>
+                        <div class='col'>
+                            <iframe
+                                src="https://carbon.now.sh/embed?bg=rgba(255%2C255%2C255%2C0)&t=one-dark&wt=none&l=text%2Fx-c%2B%2Bsrc&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=9px&ph=11px&ln=false&fl=1&fm=Hack&fs=13px&lh=133%25&si=false&es=2x&wm=false&code=%252F%252F%2520translate%2520point%2520along%2520surface%2520normal%2520%250A%2540N%2520%253D%2520primuv(1%252C%2520%2522N%2522%252C%2520i%2540sourceprim%252C%2520v%2540sourceprimuv)%253B%250A%2540P%2520%252B%253D%2520%2540N%2520*%2520rand(%2540ptnum)%2520*%2520ch(%2522distance%2522)%253B%250A%250A%252F%252F%2520set%2520userdata%250Av%2540worldPosition%2520%253D%2520v%2540P%253B%250Av%2540worldVelocity%2520%253D%2520v%2540N%253B%250A%250A%252F%252F%2520arnold%2520per-point%2520card%2520size%2520attribute%250A%2540ar_radius%2520%253D%2520fit(rand(%2540ptnum)%252C%25200.0%252C%25201.0%252C%25200.75%252C%25202.0)%253B"
+                                style="width:500px; height:275px; border:0; overflow:hidden;"
+                                sandbox="allow-scripts allow-same-origin">
+                            </iframe>
+                            <figcaption class="figure-caption text-center mb-8">VEX (point wrangle)</figcaption>
+                        </div>
+                      </div>
+            
+                    
+            
+            
+                    <p class="h5 text-secondary mt-2 mb-2">
+                        To make the pointcloud render as cards, we need to set an arnold attribute (mode:quad).
+                    </p>
+            
+            
+                    <a href="../src/assets/img/projects/brushstroke-shader/points_quads.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                        <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_quads.png" alt="...">
+                    </a>
+            
+                    <p class="h5 text-secondary mt-2 mb-2">
+                        The rendered cards are ONLY visible to camera rays. It doesn't cast shadows, nothing, nada. Just visible to primary rays.
+                    </p>
+                    <p class="h5 text-secondary mt-2 mb-2">
+                        The <code>quantize</code>, <code>quantize_cut_edge</code> shaders have a traceset parameter. Make sure to add that same trace set on any object that should _not_ be included in the sampling process. In this case, that's the points themselves.
+                    </p>
+            
+                    <a href="../src/assets/img/projects/brushstroke-shader/points_visibility.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                        <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_visibility.png" alt="...">
+                    </a>
+            
+            
+            
+                    <p class="h5 text-secondary mt-6 mb-6">
+                        At this point I moved away from houdini and did the shading in maya - but there's honestly no good reason for that. Just to show you that you can easily transfer this pointcloud between DCC's using .ass files. 
+                    </p>
+                </div>
+              </div>
             </div>
-            <div class='col'>
-                <a href="../src/assets/img/projects/brushstroke-shader/pointcloud.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-                    <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/pointcloud.png" alt="...">
-                </a>
-            </div>
+            
           </div>
 
-          <p class="h5 text-secondary mt-2 mb-6">
-            This is all the "custom setup" to make this work. It's rather straightforward. I used Houdini to generate the points. This can be done in pretty much any software though. I'm simply familiar with Houdini.
-        </p>
+        <hr class="border-gray-300 my-6">
 
-          <div class='row mb-2'>
-            <div class='col'>
-                <p class="h5 text-secondary mt-2 mb-2">
-                    The basic idea is as follows: Generate points on a surface. Move the points away from the surface, e.g along the surface normal. Store the vector between this new point and the original point. Also store the new point position.
-                </p>
-
-            </div>
-            <div class='col'>
-                <iframe
-                    src="https://carbon.now.sh/embed?bg=rgba(255%2C255%2C255%2C0)&t=one-dark&wt=none&l=text%2Fx-c%2B%2Bsrc&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=9px&ph=11px&ln=false&fl=1&fm=Hack&fs=13px&lh=133%25&si=false&es=2x&wm=false&code=%252F%252F%2520translate%2520point%2520along%2520surface%2520normal%2520%250A%2540N%2520%253D%2520primuv(1%252C%2520%2522N%2522%252C%2520i%2540sourceprim%252C%2520v%2540sourceprimuv)%253B%250A%2540P%2520%252B%253D%2520%2540N%2520*%2520rand(%2540ptnum)%2520*%2520ch(%2522distance%2522)%253B%250A%250A%252F%252F%2520set%2520userdata%250Av%2540worldPosition%2520%253D%2520v%2540P%253B%250Av%2540worldVelocity%2520%253D%2520v%2540N%253B%250A%250A%252F%252F%2520arnold%2520per-point%2520card%2520size%2520attribute%250A%2540ar_radius%2520%253D%2520fit(rand(%2540ptnum)%252C%25200.0%252C%25201.0%252C%25200.75%252C%25202.0)%253B"
-                    style="width:500px; height:275px; border:0; overflow:hidden;"
-                    sandbox="allow-scripts allow-same-origin">
-                </iframe>
-                <figcaption class="figure-caption text-center mb-8">VEX (point wrangle)</figcaption>
-            </div>
-          </div>
-
-        
-
-
-        <p class="h5 text-secondary mt-2 mb-2">
-            To make the pointcloud render as cards, we need to set an arnold attribute (mode:quad).
-        </p>
-
-
-        <a href="../src/assets/img/projects/brushstroke-shader/points_quads.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_quads.png" alt="...">
-        </a>
-
-        <p class="h5 text-secondary mt-2 mb-2">
-            The rendered cards are ONLY visible to camera rays. It doesn't cast shadows, nothing, nada. Just visible to primary rays.
-        </p>
-        <p class="h5 text-secondary mt-2 mb-2">
-            The <code>quantize</code>, <code>quantize_cut_edge</code> shaders have a traceset parameter. Make sure to add that same trace set on any object that should _not_ be included in the sampling process. In this case, that's the points themselves.
-        </p>
-
-        <a href="../src/assets/img/projects/brushstroke-shader/points_visibility.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_visibility.png" alt="...">
-        </a>
-
-
-
-        <p class="h5 text-secondary mt-6 mb-2">
-            At this point I moved away from houdini and did the shading in maya - but there's honestly no good reason for that. Just to show you that you can easily transfer this pointcloud between DCC's using .ass files. Render-settings wise the only thing that stands out is having to deal with a huge number of transparent surfaces. In this example I set the transparency depth to <strong>700</strong>.
-        </p>
-
+        <div class="alert alert-primary" role="alert">
+          <strong>Note:</strong> Render-settings wise the only thing that stands out is having to deal with a huge number of transparent surfaces. In this example I set the transparency depth to <strong>700</strong>.
+        </div>
+          
         <div class="alert alert-primary" role="alert">
         <strong>Note:</strong> I've found that the fastest way to work is to light your scene with the brushstrokes disabled. Then you can render out a low-res render, and project that on *all* the objects in the scene as emissive shader. This replaces the monte carlo simulation with a simple texture lookup, speeding up the rendering significantly. This makes it very fast to fine-tune the look of the brushstrokes.
         </div>
@@ -205,48 +258,110 @@
         <hr class="border-gray-300 my-6">
 
         
-        <h2 class="mt-10">Download</h2>
 
-        <div class="row mb-7 mb-md-9 mt-10">
-          <div class="col-12 col-md-4 text-center">
-            <button class="btn btn-primary-soft">1.0-windows-ai5.0.2.0</button>
-          </div>
-          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
-            <button class="btn btn-primary-soft">1.0-osx-ai5.0.2.0</button>
-          </div>
-          <div class="col-12 col-md-4 text-center border-left-md border-gray-300">
-            <button class="btn btn-secondary-soft">Source Code</button>
-            </div>
-        </div>
         
         <h2 class="mt-10">Installation</h2>
 
-        <div class="container mt-10">
-            <div class="row mb-8">
-                <div class="col-sm">
-                   <p>MtoA</p>
-                   <p class="h5 text-secondary mt-7">
-                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
-                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUSTY/bin</code></strong></br></br>
-                    <strong class="badge badge-danger-soft"><code>MTOA_TEMPLATES_PATH = $PATH_TO_DUSTY/ae</code></strong></br></br>
-                    It’s also possible to copy the files into your MtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
-                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/shaders</code></strong></br></br>
-                    Files in <strong class="badge badge-danger-soft"><code>/ae</code></strong> go to <strong class="badge badge-danger-soft"><code>[$MTOA_LOCATION]/scripts/mtoa/ui/ae</code></strong>
-                    </p>
-                </div>
-                <div class="col-sm">
-                   <p>HtoA</p>
-                   <p class="h5 text-secondary mt-7">
-                    Set the following environment variables, replacing $PATH_TO_DUSTY with the actual path on your machine.</br></br>
-                    <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_DUST/bin</code></strong></br></br>
-                    It’s also possible to copy the files into your HtoA install, but I personally prefer the first option. Just copy the files like this:</br></br>
-                    Files in <strong class="badge badge-danger-soft"><code>/bin</code></strong> go to <strong class="badge badge-danger-soft"><code>[$HTOA_LOCATION]/arnold/plugins</code></strong></br></br>
-                    </p>
-                </div>
-            </div>
-        </div>
 
-        </div> <!-- / .row -->
+        <hr class="border-gray-300 my-6">
+
+        <!-- Heading -->
+        <h3 id="requirements" class="font-weight-bold" id="newAndExtendedComponents">
+            Requirements
+          </h3>
+
+          <!-- Text -->
+          <p class="text-gray-700">
+            The minimum Arnold core version is <span class="badge badge-pill badge-primary-soft ml-auto align-self-center">5.3.0.2</span> and <span class="badge badge-pill badge-primary-soft ml-auto align-self-center">6.0.0.0</span>. Both are included in the download.
+          </p>
+
+          <hr class="border-gray-300 my-6">
+
+        <!-- Text -->
+        <h3 id="mtoa" class="font-weight-bold" id="newAndExtendedComponents">
+          MtoA
+        </h3>
+
+        <!-- Text -->
+        <p class="text-gray-700">
+            <strong>Option 1:</strong> Set the following environment variables, replacing <code>$PATH_TO_FOLDER</code> with the actual path on your machine
+        </p>
+
+        <p class="text-gray-700">
+          <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_FOLDER/bin/$OS/5.3.0.2</code></strong> or <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_FOLDER/bin/$OS/6.0.0.0</code></strong>
+        </p>
+
+        <p class="text-gray-700">
+            <strong>Option 2:</strong> It’s also possible to copy the files into your MtoA install. Copy the files like this:
+        </p>
+
+        <p class="text-gray-700">
+          Files in <code>/bin/5.3.0.2</code> or <code>/bin/6.0.0.0</code>  go to <code>$MTOA_LOCATION/shaders</code>
+        </p>
+
+
+        
+        <!-- Divider -->
+        <hr class="border-gray-300 my-6">
+
+        <!-- Text -->
+        <h3 id="htoa" class="font-weight-bold" id="newAndExtendedComponents">
+            HtoA
+          </h3>
+          
+          <p class="text-gray-700">
+              <strong>Step 1 - Option 1:</strong> Set the following environment variables, replacing <code>$PATH_TO_FOLDER</code> with the actual path on your machine and <code>$OS</code> with your operating system (windows/linux/osx).
+          </p>
+
+          <p class="text-gray-700">
+            <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_FOLDER/bin/$OS/5.3.0.2</code></strong> or <strong class="badge badge-danger-soft"><code>ARNOLD_PLUGIN_PATH = $PATH_TO_FOLDER/bin/$OS/6.0.0.0</code></strong>
+          </p>
+
+          <p class="text-gray-700">
+              <strong>Step 1 - Option 2:</strong> It’s also possible to copy the files into your HtoA install. Copy the files like this:
+          </p>
+
+          <p class="text-gray-700 mb-8">
+            Files in <code>/bin/5.3.0.2</code> or <code>/bin/6.0.0.0</code>  go to <code>$HTOA_LOCATION/arnold/plugins</code>
+          </p>
+
+                  
+
+        <!-- Divider -->
+        <hr class="border-gray-300 my-6">
+
+
+        <!-- Text -->
+        <h3 id="c4dtoa" class="font-weight-bold" id="newAndExtendedComponents">
+          C4DToA
+        </h3>
+
+        <p class="text-gray-700">
+          Files in <code>/bin/$OPERATING_SYSTEM/5.3.0.2</code> or <code>/bin/$OPERATING_SYSTEM/6.0.0.0</code>  go to <code>$C4D_INSTALL/plugins/C4DtoA/shaders</code>
+        </p>
+
+        <p class="text-gray-700">
+          More information can be found <a href="https://docs.arnoldrenderer.com/display/A5AFCUGJPN/Third-party+Shaders">here</a>.
+        </p>
+
+        
+
+        <!-- Divider -->
+        <hr class="border-gray-300 my-6">
+
+
+        <!-- Text -->
+        <h3 id="maxtoa" class="font-weight-bold" id="newAndExtendedComponents">
+          MaxToA
+        </h3>
+        <p class="text-gray-700">
+          Files in <code>/bin/$OPERATING_SYSTEM/5.3.0.2</code> or <code>/bin/$OPERATING_SYSTEM/6.0.0.0</code> go to <code>$3DSMAX_LOCATION/Plugins/MaxToA</code>
+        </p>
+
+
+
+        
+      </div>
         
       </div> <!-- / .container -->
     </section>
