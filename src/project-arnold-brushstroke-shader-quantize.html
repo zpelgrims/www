@@ -57,8 +57,8 @@
         </div>
         
         <div class="twentytwenty-container rounded">
-            <img src="../src/assets/img/projects/brushstroke-shader/final_able_to_render_user_no_shader.jpg" alt="No brushstrokes">
-            <img src="../src/assets/img/projects/brushstroke-shader/final_able_to_render_user.jpg" alt="With brushstrokes">
+            <img src="/assets/img/projects/brushstroke-shader/final_able_to_render_user_no_shader.jpg" alt="No brushstrokes">
+            <img src="/assets/img/projects/brushstroke-shader/final_able_to_render_user.jpg" alt="With brushstrokes">
         </div>
 
         <hr class="border-gray-300 my-6">
@@ -76,8 +76,8 @@
             The answer to this ended up being a rendered <strong>point cloud as camera-facing cards</strong>. Ofcourse not straight out of the box, so let's dive into the details:
         </p>
 
-        <a href="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" alt="...">
+        <a href="/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/node_network_shading_annotated.png" alt="...">
         </a>
         <figcaption class="figure-caption text-center mb-8">The shader setup, open the node editor in the maya scene to bring this up.</figcaption>
 
@@ -107,9 +107,9 @@
         </p>
 
         <div class="twentytwenty-container rounded">
-            <img src="../src/assets/img/projects/brushstroke-shader/render_layer1.png" alt="Layer 1">
-            <img src="../src/assets/img/projects/brushstroke-shader/render_layer2.png" alt="Layer 1+2">
-            <img src="../src/assets/img/projects/brushstroke-shader/final_raw.png" alt="Layer 1+2+3">
+            <img src="/assets/img/projects/brushstroke-shader/render_layer1.png" alt="Layer 1">
+            <img src="/assets/img/projects/brushstroke-shader/render_layer2.png" alt="Layer 1+2">
+            <img src="/assets/img/projects/brushstroke-shader/final_raw.png" alt="Layer 1+2+3">
         </div>
         <figcaption class="figure-caption text-center mb-8">Work from large to small strokes</figcaption>
 
@@ -119,8 +119,8 @@
             The cards need to aligned to the surface, or a custom direction, in screenspace. To handle this I wrote some OSL <code>(align_uvcoords_to_vec.osl)</code> that takes care of everything. You input the position/direction userdata of the points, it outputs rotated UV coordinates that you can feed into an image.
         </p>
 
-        <a href="../src/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" class="d-block mt-5 mb-md-0" data-fancybox>
-            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" alt="...">
+        <a href="/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" class="d-block mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/stroke_automatic_alignment.png" alt="...">
         </a>
         <figcaption class="figure-caption text-center mb-8">To show the automatic surface alignment, I replaced the brushstrokes with some arrows.</figcaption>
         
@@ -132,8 +132,8 @@
             If you want to paint a custom direction for the strokes, that's possible too. For example, around the snout of the fox it was key I aligned the brushstrokes so that they follow the colour boundary. That edge needs to be sharp! The same shader is used, only with a different input vector. E.g in Houdini, it's very easy to paint these vectors.
         </p>
 
-        <a href="../src/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-            <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" alt="...">
+        <a href="/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+            <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/stroke_custom_alignment.png" alt="...">
         </a>
         <figcaption class="figure-caption text-center mb-8">The snout needed custom oriented vectors that followed the texture.</figcaption>
 
@@ -174,8 +174,8 @@
             
                         </div>
                         <div class='col'>
-                            <a href="../src/assets/img/projects/brushstroke-shader/pointcloud.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-                                <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/pointcloud.png" alt="...">
+                            <a href="/assets/img/projects/brushstroke-shader/pointcloud.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                                <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/pointcloud.png" alt="...">
                             </a>
                         </div>
                       </div>
@@ -209,8 +209,8 @@
                     </p>
             
             
-                    <a href="../src/assets/img/projects/brushstroke-shader/points_quads.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-                        <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_quads.png" alt="...">
+                    <a href="/assets/img/projects/brushstroke-shader/points_quads.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                        <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/points_quads.png" alt="...">
                     </a>
             
                     <p class="h5 text-secondary mt-2 mb-2">
@@ -220,8 +220,8 @@
                         The <code>quantize</code>, <code>quantize_cut_edge</code> shaders have a traceset parameter. Make sure to add that same trace set on any object that should _not_ be included in the sampling process. In this case, that's the points themselves.
                     </p>
             
-                    <a href="../src/assets/img/projects/brushstroke-shader/points_visibility.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
-                        <img class="rounded img-fluid mb-2" src="../src/assets/img/projects/brushstroke-shader/points_visibility.png" alt="...">
+                    <a href="/assets/img/projects/brushstroke-shader/points_visibility.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+                        <img class="rounded img-fluid mb-2" src="/assets/img/projects/brushstroke-shader/points_visibility.png" alt="...">
                     </a>
             
             
