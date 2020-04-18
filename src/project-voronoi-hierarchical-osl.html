@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "Implementation of a 3-dimensional hierarchical voronoi with constant-width border and cell smoothing (osl)"
+    })
+  </head>
+  <body class="bg-light">
+
+<!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+          A 3-dimensional hierarchical voronoi with constant-width border and cell smoothing (OSL).
+        </p>
+
+        <p class="font-size-md text-center mb-7 mb-md-6">
+          It's able to subdivide cells into smaller voronoi arrangements, use at your own risk :)
+        </p>
+        
+
+        <a href="/assets/img/projects/voronoi/zeno-pelgrims-hierarchical-voronoi-osl.png" class="d-block mb-3 mt-5 mb-md-0" data-fancybox>
+          <img class="rounded img-fluid mb-2" src="/assets/img/projects/voronoi/zeno-pelgrims-hierarchical-voronoi-osl.png" alt="...">
+      </a>
+      <figcaption class="figure-caption text-center mb-8">Could also be called "a combination of a few of Inigo Quillez' brainfarts"</figcaption>
+
+
+        <hr class="border-gray-300 my-6">
+        
+        <pre class="cpp" style="font-family:monospace;">vector fract<span style="color: #008000;">&#40;</span>vector x<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#123;</span>
+          <span style="color: #0000ff;">return</span> x <span style="color: #000040;">-</span> <span style="color: #0000dd;">floor</span><span style="color: #008000;">&#40;</span>x<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+        <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        vector rand3<span style="color: #008000;">&#40;</span> vector p <span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span> 
+          vector d <span style="color: #000080;">=</span> p<span style="color: #000040;">*</span><span style="color:#800080;">2.0</span> <span style="color: #000040;">+</span> <span style="color:#800080;">0.5</span><span style="color: #008080;">;</span>
+          <span style="color: #0000ff;">return</span> noise<span style="color: #008000;">&#40;</span><span style="color: #FF0000;">&quot;perlin&quot;</span>, d<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+        <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        &nbsp;
+        <span style="color: #0000ff;">float</span> smin2<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span> a, <span style="color: #0000ff;">float</span> b, <span style="color: #0000ff;">float</span> r<span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span>
+            <span style="color: #0000ff;">float</span> f <span style="color: #000080;">=</span> max<span style="color: #008000;">&#40;</span><span style="color: #0000dd;">0</span>., <span style="color: #0000dd;">1</span>. <span style="color: #000040;">-</span> <span style="color: #0000dd;">abs</span><span style="color: #008000;">&#40;</span>b <span style="color: #000040;">-</span> a<span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span>r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            <span style="color: #0000ff;">return</span> min<span style="color: #008000;">&#40;</span>a, b<span style="color: #008000;">&#41;</span> <span style="color: #000040;">-</span> r<span style="color: #000040;">*</span><span style="color:#800080;">.25</span><span style="color: #000040;">*</span>f<span style="color: #000040;">*</span>f<span style="color: #008080;">;</span>
+        <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        &nbsp;
+        <span style="color: #0000ff;">float</span> remap<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span> x, <span style="color: #0000ff;">float</span> ew<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#123;</span>
+            <span style="color: #0000ff;">float</span> c <span style="color: #000080;">=</span> x<span style="color: #008080;">;</span>
+            <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span>c <span style="color: #000080;">&lt;</span> ew<span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span> 
+                c <span style="color: #000080;">=</span> <span style="color: #0000dd;">abs</span><span style="color: #008000;">&#40;</span>c <span style="color: #000040;">-</span> ew<span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span>ew<span style="color: #008080;">;</span> <span style="color: #666666;">// Normalize the domain to a range of zero to one.</span>
+                c <span style="color: #000080;">=</span> smoothstep<span style="color: #008000;">&#40;</span><span style="color:#800080;">0.03</span>, <span style="color:#800080;">0.1</span>, c<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            <span style="color: #008000;">&#125;</span>
+            <span style="color: #0000ff;">else</span> <span style="color: #008000;">&#123;</span> <span style="color: #666666;">// Over the threshold? Use the regular Voronoi cell value.</span>
+                c <span style="color: #000080;">=</span> <span style="color: #008000;">&#40;</span>c <span style="color: #000040;">-</span> ew<span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color: #008000;">&#40;</span><span style="color: #0000dd;">1</span>. <span style="color: #000040;">-</span> ew<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span> <span style="color: #666666;">// Normalize the domain to a range of zero to one.</span>
+                c <span style="color: #000080;">=</span> smoothstep<span style="color: #008000;">&#40;</span><span style="color:#800080;">1.0</span>, <span style="color:#800080;">1.0</span>, c<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            <span style="color: #008000;">&#125;</span>
+        &nbsp;
+            <span style="color: #0000ff;">return</span> c<span style="color: #008080;">;</span>
+        <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        &nbsp;
+        vector voronoi<span style="color: #008000;">&#40;</span> vector x, 
+                        <span style="color: #0000ff;">float</span> probability_1, <span style="color: #0000ff;">float</span> probability_2, <span style="color: #0000ff;">float</span> probability_3,
+                        <span style="color: #0000ff;">float</span> scale_layer_1, <span style="color: #0000ff;">float</span> scale_layer_2, <span style="color: #0000ff;">float</span> scale_layer_3,
+                        <span style="color: #0000ff;">float</span> smoothing
+        <span style="color: #008000;">&#41;</span>
+        <span style="color: #008000;">&#123;</span>
+        &nbsp;
+            vector n <span style="color: #000080;">=</span> <span style="color: #0000dd;">floor</span><span style="color: #008000;">&#40;</span>x<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            vector f <span style="color: #000080;">=</span> fract<span style="color: #008000;">&#40;</span>x<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            vector h <span style="color: #000080;">=</span> step<span style="color: #008000;">&#40;</span><span style="color:#800080;">0.5</span>, f<span style="color: #008000;">&#41;</span> <span style="color: #000040;">-</span> <span style="color:#800080;">2.0</span><span style="color: #008080;">;</span>
+            n <span style="color: #000040;">+</span><span style="color: #000080;">=</span> h<span style="color: #008080;">;</span>
+        &nbsp;
+            <span style="color: #0000ff;">float</span> id, le<span style="color: #008080;">;</span>
+        &nbsp;
+            vector mo<span style="color: #008080;">;</span>
+            <span style="color: #0000ff;">float</span> md <span style="color: #000080;">=</span> <span style="color:#800080;">10.0</span>, lMd <span style="color: #000080;">=</span> <span style="color:#800080;">10.0</span>, lnDist, d<span style="color: #008080;">;</span>
+        &nbsp;
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> a<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> a<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> a<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> j<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> j<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> j<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> i<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> i<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> i<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #008000;">&#123;</span>
+                vector g1 <span style="color: #000080;">=</span> n <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>i<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>j<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>a<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                vector rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span>g1<span style="color: #000040;">*</span>scale_layer_1<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                vector o <span style="color: #000080;">=</span> g1 <span style="color: #000040;">+</span> rr<span style="color: #008080;">;</span>
+                vector r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o<span style="color: #008080;">;</span>
+                <span style="color: #0000ff;">float</span> d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                <span style="color: #0000ff;">float</span> z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+        &nbsp;
+                <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_1<span style="color: #008000;">&#41;</span>     
+                <span style="color: #008000;">&#123;</span>
+                    <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> d<span style="color: #000080;">&lt;</span>md <span style="color: #008000;">&#41;</span>
+                    <span style="color: #008000;">&#123;</span>
+                        md <span style="color: #000080;">=</span> d<span style="color: #008080;">;</span>
+                        mo <span style="color: #000080;">=</span> r<span style="color: #008080;">;</span> 
+                    <span style="color: #008000;">&#125;</span>
+                <span style="color: #008000;">&#125;</span>
+                <span style="color: #0000ff;">else</span>
+                <span style="color: #008000;">&#123;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> b<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> b<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> b<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> l<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> l<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> l<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> k<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> k<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> k<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #008000;">&#123;</span>
+                        vector g2 <span style="color: #000080;">=</span> g1 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>k<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>l<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>b<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">2.0</span><span style="color: #008080;">;</span>
+                        rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span>g2<span style="color: #000040;">*</span>scale_layer_2<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                        o <span style="color: #000080;">=</span> g2 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">2.0</span><span style="color: #008080;">;</span>
+                        r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o<span style="color: #008080;">;</span>
+                        d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                        z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+                        <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_2 <span style="color: #008000;">&#41;</span>              
+                        <span style="color: #008000;">&#123;</span>
+                            <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> d<span style="color: #000080;">&lt;</span>md <span style="color: #008000;">&#41;</span>
+                            <span style="color: #008000;">&#123;</span>
+                                md <span style="color: #000080;">=</span> d<span style="color: #008080;">;</span>
+                                mo <span style="color: #000080;">=</span> r<span style="color: #008080;">;</span> 
+                            <span style="color: #008000;">&#125;</span>
+                        <span style="color: #008000;">&#125;</span>
+                        <span style="color: #0000ff;">else</span>
+                        <span style="color: #008000;">&#123;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> c<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> c<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> c<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> n<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> n<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> n<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> m<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> m<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> m<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #008000;">&#123;</span>
+                                vector g3 <span style="color: #000080;">=</span> g2 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>m<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>n<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>c<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">4.0</span><span style="color: #008080;">;</span>
+                                rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span> g3<span style="color: #000040;">*</span>scale_layer_3<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                o <span style="color: #000080;">=</span> g3 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">4.0</span><span style="color: #008080;">;</span>
+                                r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o<span style="color: #008080;">;</span>
+                                d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+                                <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_3 <span style="color: #008000;">&#41;</span>                
+                                <span style="color: #008000;">&#123;</span>
+                                    <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> d<span style="color: #000080;">&lt;</span>md <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #008000;">&#123;</span>
+                                        md <span style="color: #000080;">=</span> d<span style="color: #008080;">;</span>
+                                        mo <span style="color: #000080;">=</span> r<span style="color: #008080;">;</span> 
+                                    <span style="color: #008000;">&#125;</span>
+                                <span style="color: #008000;">&#125;</span>
+                                <span style="color: #0000ff;">else</span>
+                                <span style="color: #008000;">&#123;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> l<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> l<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> l<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> t<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> t<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> t<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> s<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> s<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> s<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #008000;">&#123;</span>
+                                        vector g4 <span style="color: #000080;">=</span> g3 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>s<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>t<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>l<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">8.0</span><span style="color: #008080;">;</span>
+                                        rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span> g4 <span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        o <span style="color: #000080;">=</span> g4 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">8.0</span><span style="color: #008080;">;</span>
+                                        r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o<span style="color: #008080;">;</span>
+                                        d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+                                        <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> d<span style="color: #000080;">&lt;</span>md <span style="color: #008000;">&#41;</span>
+                                        <span style="color: #008000;">&#123;</span>
+                                            md <span style="color: #000080;">=</span> d<span style="color: #008080;">;</span>
+                                            mo <span style="color: #000080;">=</span> r<span style="color: #008080;">;</span> 
+                                        <span style="color: #008000;">&#125;</span>
+                                    <span style="color: #008000;">&#125;</span>
+                                <span style="color: #008000;">&#125;</span>
+                            <span style="color: #008000;">&#125;</span>
+                        <span style="color: #008000;">&#125;</span>
+                    <span style="color: #008000;">&#125;</span>
+                <span style="color: #008000;">&#125;</span>
+            <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        &nbsp;
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> a<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> a<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> a<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> j<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> j<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> j<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> i<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> i<span style="color: #000080;">&lt;=</span><span style="color: #0000dd;">3</span><span style="color: #008080;">;</span> i<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+            <span style="color: #008000;">&#123;</span>
+                vector g1 <span style="color: #000080;">=</span> n <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>i<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>j<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>a<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                vector rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span>g1<span style="color: #000040;">*</span>scale_layer_1<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                vector o <span style="color: #000080;">=</span> g1 <span style="color: #000040;">+</span> rr<span style="color: #008080;">;</span>
+                vector r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o <span style="color: #000040;">-</span> mo<span style="color: #008080;">;</span>
+                <span style="color: #0000ff;">float</span> d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                <span style="color: #0000ff;">float</span> z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+        &nbsp;
+                <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_1<span style="color: #008000;">&#41;</span>     
+                <span style="color: #008000;">&#123;</span>
+                    <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span>dot<span style="color: #008000;">&#40;</span>r, r<span style="color: #008000;">&#41;</span><span style="color: #000080;">&gt;</span><span style="color:#800080;">.00001</span><span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span>
+                        lnDist <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>mo <span style="color: #000040;">+</span> r<span style="color: #000040;">*</span><span style="color:#800080;">.5</span>, normalize<span style="color: #008000;">&#40;</span>r<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                        lMd <span style="color: #000080;">=</span> smin2<span style="color: #008000;">&#40;</span>lMd, lnDist, <span style="color: #008000;">&#40;</span>lnDist<span style="color: #000040;">*</span><span style="color:#800080;">.5</span> <span style="color: #000040;">+</span> <span style="color:#800080;">.5</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">*</span>smoothing<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                    <span style="color: #008000;">&#125;</span>
+                <span style="color: #008000;">&#125;</span>
+                <span style="color: #0000ff;">else</span>
+                <span style="color: #008000;">&#123;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> b<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> b<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> b<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> l<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> l<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> l<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> k<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> k<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> k<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                    <span style="color: #008000;">&#123;</span>
+                        vector g2 <span style="color: #000080;">=</span> g1 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>k<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>l<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>b<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">2.0</span><span style="color: #008080;">;</span>
+                        rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span>g2<span style="color: #000040;">*</span>scale_layer_2<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                        o <span style="color: #000080;">=</span> g2 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">2.0</span><span style="color: #008080;">;</span>
+                        r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o <span style="color: #000040;">-</span> mo<span style="color: #008080;">;</span>
+                        d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                        z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+                        <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_2 <span style="color: #008000;">&#41;</span>              
+                        <span style="color: #008000;">&#123;</span>
+                            <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span>dot<span style="color: #008000;">&#40;</span>r, r<span style="color: #008000;">&#41;</span><span style="color: #000080;">&gt;</span><span style="color:#800080;">.00001</span><span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span>
+                                lnDist <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>mo <span style="color: #000040;">+</span> r<span style="color: #000040;">*</span><span style="color:#800080;">.5</span>, normalize<span style="color: #008000;">&#40;</span>r<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                lMd <span style="color: #000080;">=</span> smin2<span style="color: #008000;">&#40;</span>lMd, lnDist, <span style="color: #008000;">&#40;</span>lnDist<span style="color: #000040;">*</span><span style="color:#800080;">.5</span> <span style="color: #000040;">+</span> <span style="color:#800080;">.5</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">*</span>smoothing<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                            <span style="color: #008000;">&#125;</span>
+                        <span style="color: #008000;">&#125;</span>
+                        <span style="color: #0000ff;">else</span>
+                        <span style="color: #008000;">&#123;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> c<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> c<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> c<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> n<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> n<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> n<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> m<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> m<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> m<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                            <span style="color: #008000;">&#123;</span>
+                                vector g3 <span style="color: #000080;">=</span> g2 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>m<span style="color: #008000;">&#41;</span>,<span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>n<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>c<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">4.0</span><span style="color: #008080;">;</span>
+                                rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span> g3<span style="color: #000040;">*</span>scale_layer_3<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                o <span style="color: #000080;">=</span> g3 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">4.0</span><span style="color: #008080;">;</span>
+                                r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o <span style="color: #000040;">-</span> mo<span style="color: #008080;">;</span>
+                                d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+                                <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span> z<span style="color: #000080;">&lt;</span>probability_3 <span style="color: #008000;">&#41;</span>                
+                                <span style="color: #008000;">&#123;</span>
+                                    <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span>dot<span style="color: #008000;">&#40;</span>r, r<span style="color: #008000;">&#41;</span><span style="color: #000080;">&gt;</span><span style="color:#800080;">.00001</span><span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span>
+                                        lnDist <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>mo <span style="color: #000040;">+</span> r<span style="color: #000040;">*</span><span style="color:#800080;">.5</span>, normalize<span style="color: #008000;">&#40;</span>r<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        lMd <span style="color: #000080;">=</span> smin2<span style="color: #008000;">&#40;</span>lMd, lnDist, <span style="color: #008000;">&#40;</span>lnDist<span style="color: #000040;">*</span><span style="color:#800080;">.5</span> <span style="color: #000040;">+</span> <span style="color:#800080;">.5</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">*</span>smoothing<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                    <span style="color: #008000;">&#125;</span>
+                                <span style="color: #008000;">&#125;</span>
+                                <span style="color: #0000ff;">else</span>
+                                <span style="color: #008000;">&#123;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> l<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> l<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> l<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> t<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> t<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> t<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #0000ff;">for</span><span style="color: #008000;">&#40;</span> <span style="color: #0000ff;">int</span> s<span style="color: #000080;">=</span><span style="color: #0000dd;">0</span><span style="color: #008080;">;</span> s<span style="color: #000080;">&lt;</span><span style="color: #0000dd;">2</span><span style="color: #008080;">;</span> s<span style="color: #000040;">++</span> <span style="color: #008000;">&#41;</span>
+                                    <span style="color: #008000;">&#123;</span>
+                                        vector g4 <span style="color: #000080;">=</span> g3 <span style="color: #000040;">+</span> vector<span style="color: #008000;">&#40;</span><span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>s<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>t<span style="color: #008000;">&#41;</span>, <span style="color: #0000ff;">float</span><span style="color: #008000;">&#40;</span>l<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">/</span><span style="color:#800080;">8.0</span><span style="color: #008080;">;</span>
+                                        rr <span style="color: #000080;">=</span> rand3<span style="color: #008000;">&#40;</span> g4 <span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        o <span style="color: #000080;">=</span> g4 <span style="color: #000040;">+</span> rr<span style="color: #000040;">/</span><span style="color:#800080;">8.0</span><span style="color: #008080;">;</span>
+                                        r <span style="color: #000080;">=</span> x <span style="color: #000040;">-</span> o <span style="color: #000040;">-</span> mo<span style="color: #008080;">;</span>
+                                        d <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>r,r<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        z <span style="color: #000080;">=</span> rr<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span><span style="color: #008080;">;</span>
+        &nbsp;
+                                        <span style="color: #0000ff;">if</span><span style="color: #008000;">&#40;</span>dot<span style="color: #008000;">&#40;</span>r, r<span style="color: #008000;">&#41;</span><span style="color: #000080;">&gt;</span><span style="color:#800080;">.00001</span><span style="color: #008000;">&#41;</span> <span style="color: #008000;">&#123;</span>
+                                            lnDist <span style="color: #000080;">=</span> dot<span style="color: #008000;">&#40;</span>mo <span style="color: #000040;">+</span> r<span style="color: #000040;">*</span><span style="color:#800080;">.5</span>, normalize<span style="color: #008000;">&#40;</span>r<span style="color: #008000;">&#41;</span><span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                            lMd <span style="color: #000080;">=</span> smin2<span style="color: #008000;">&#40;</span>lMd, lnDist, <span style="color: #008000;">&#40;</span>lnDist<span style="color: #000040;">*</span><span style="color:#800080;">.5</span> <span style="color: #000040;">+</span> <span style="color:#800080;">.5</span><span style="color: #008000;">&#41;</span><span style="color: #000040;">*</span>smoothing<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+                                        <span style="color: #008000;">&#125;</span>
+                                    <span style="color: #008000;">&#125;</span>
+                                <span style="color: #008000;">&#125;</span>
+                            <span style="color: #008000;">&#125;</span>
+                        <span style="color: #008000;">&#125;</span>
+                    <span style="color: #008000;">&#125;</span>
+                <span style="color: #008000;">&#125;</span>
+            <span style="color: #008000;">&#125;</span>
+        &nbsp;
+            <span style="color: #0000ff;">return</span> vector<span style="color: #008000;">&#40;</span>max<span style="color: #008000;">&#40;</span>lMd, <span style="color:#800080;">0.0</span><span style="color: #008000;">&#41;</span>, le, id <span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+        <span style="color: #008000;">&#125;</span>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        shader voronoi_smooth<span style="color: #008000;">&#40;</span>
+            vector translate <span style="color: #000080;">=</span> vector<span style="color: #008000;">&#40;</span><span style="color:#800080;">0.0</span>, <span style="color:#800080;">0.0</span>, <span style="color:#800080;">0.0</span><span style="color: #008000;">&#41;</span>,
+            vector scale <span style="color: #000080;">=</span> vector<span style="color: #008000;">&#40;</span><span style="color:#800080;">1.0</span>, <span style="color:#800080;">1.0</span>, <span style="color:#800080;">1.0</span><span style="color: #008000;">&#41;</span>,
+        &nbsp;
+            <span style="color: #0000ff;">float</span> probability_layer1 <span style="color: #000080;">=</span> <span style="color:#800080;">0.15</span>,
+            <span style="color: #0000ff;">float</span> probability_layer2 <span style="color: #000080;">=</span> <span style="color:#800080;">0.2</span>,
+            <span style="color: #0000ff;">float</span> probability_layer3 <span style="color: #000080;">=</span> <span style="color:#800080;">0.4</span>,
+        &nbsp;
+            <span style="color: #0000ff;">float</span> smoothing <span style="color: #000080;">=</span> <span style="color:#800080;">0.2</span>,
+            <span style="color: #0000ff;">float</span> border_thickness <span style="color: #000080;">=</span> <span style="color:#800080;">0.0</span>,
+        &nbsp;
+            vector scale_layers <span style="color: #000080;">=</span> vector<span style="color: #008000;">&#40;</span><span style="color:#800080;">1.0</span>, <span style="color:#800080;">1.0</span>, <span style="color:#800080;">1.0</span><span style="color: #008000;">&#41;</span>,
+        &nbsp;
+            output vector result <span style="color: #000080;">=</span> vector<span style="color: #008000;">&#40;</span><span style="color:#800080;">0.0</span><span style="color: #008000;">&#41;</span>
+        <span style="color: #008000;">&#41;</span>
+        <span style="color: #008000;">&#123;</span>   
+            vector pos <span style="color: #000080;">=</span> P <span style="color: #000040;">+</span> translate<span style="color: #008080;">;</span>
+            vector uv <span style="color: #000080;">=</span> pos <span style="color: #000040;">*</span> scale<span style="color: #008080;">;</span>
+            vector c <span style="color: #000080;">=</span> voronoi<span style="color: #008000;">&#40;</span>uv, probability_layer1, probability_layer2, probability_layer3, scale_layers<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">0</span><span style="color: #008000;">&#93;</span>, scale_layers<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">1</span><span style="color: #008000;">&#93;</span>, scale_layers<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">2</span><span style="color: #008000;">&#93;</span>, smoothing<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+        &nbsp;
+            <span style="color: #0000ff;">float</span> remapped <span style="color: #000080;">=</span> remap<span style="color: #008000;">&#40;</span>c<span style="color: #008000;">&#91;</span><span style="color: #0000dd;">0</span><span style="color: #008000;">&#93;</span>, border_thickness<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+            result <span style="color: #000080;">=</span> vector<span style="color: #008000;">&#40;</span>remapped<span style="color: #008000;">&#41;</span><span style="color: #008080;">;</span>
+        &nbsp;
+        <span style="color: #008000;">&#125;</span></pre>
+                    
+    
+
+        <hr class="border-gray-300 my-6">
+
+        
+
+
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>
