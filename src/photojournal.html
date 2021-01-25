@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "pageTitle": "About"
+    })
+  </head>
+  <body class="bg-light">
+
+
+    <!-- NAVBAR
+    ================================================== -->
+    @@include("partials/navbar.html", {
+      "classList": "navbar-light",
+      "type": "fluid"
+    })
+
+    <!-- WELCOME
+    ================================================== -->
+
+
+    
+
+    <!-- FORM
+    ================================================== -->
+    <section class="pt-8 pt-md-11 pb-8 pb-md-14">
+      <div class="container">
+        <img src="assets/img/about_profile.jpg" height="500" class="img-fluid screenshot">
+          
+        <div class="row justify-content-center m-md-10">
+          
+          
+          <div class="col-12 col-md-10 col-lg-8 text-center">
+            
+            <!-- Text -->
+            <p class="font-size-md text-muted mb-7 mb-md-6">
+                <strong>.. probably waiting for some uncompleted render buckets. </strong></br>
+                Beyond passionate about shading, lighting and rendering– especially when combined with stylized, cartoony shapes. I also have a special interest in <a href="https://www.lentil.xyz">esoteric lens effects/optics</a>.
+            </p>
+
+          </div>
+        </div> <!-- / .row -->
+        
+        <!-- Nav -->
+        <nav class="nav">
+          <a href="#" data-toggle="pill" data-filter="*" data-target="#portfolio">
+            Primary
+          </a>
+          <a href="#" data-toggle="pill" data-filter=".product" data-target="#portfolio">
+            Product
+          </a>
+          <a href="#" data-toggle="pill" data-filter=".ux" data-target="#portfolio">
+            UX
+          </a>
+          <a href="#" data-toggle="pill" data-filter=".resources" data-target="#portfolio">
+            Resources
+          </a>
+        </nav>
+
+        <!-- Items -->
+        <div class="row" id="portfolio" data-isotope='{"layoutMode": "masonry"}'>
+          <div class="col-12 col-md-4 product">
+
+            <!-- Image -->
+            <img class="img-fluid rounded mb-7" src="../assets/img/portfolio/portfolio-1.jpg" alt="..">
+
+          </div>
+          <div class="col-12 col-md-4 ux">
+
+            <!-- Image -->
+            <img class="img-fluid rounded mb-7" src="../assets/img/portfolio/portfolio-10.jpg" alt="..">
+
+          </div>
+          <div class="col-12 col-md-4 product">
+
+            <!-- Image -->
+            <img class="img-fluid rounded mb-7" src="../assets/img/portfolio/portfolio-11.jpg" alt="..">
+
+          </div>
+          <div class="col-12 col-md-4 ux">
+
+            <!-- Image -->
+            <img class="img-fluid rounded mb-7" src="../assets/img/portfolio/portfolio-13.jpg" alt="..">
+
+          </div>
+          <div class="col-12 col-md-4 resources">
+
+            <!-- Image -->
+            <img class="img-fluid rounded mb-7" src="../assets/img/portfolio/portfolio-12.jpg" alt="..">
+
+          </div>
+        </div>
+        
+      </div> <!-- / .container -->
+    </section>
+
+
+
+    <!-- FOOTER
+    ================================================== -->
+    @@include("partials/footer.html", {
+      "classList": "bg-gray-200"
+    })
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+      
+  </body>
+</html>

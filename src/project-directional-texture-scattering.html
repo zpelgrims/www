@@ -22,12 +22,14 @@
             DIRECTIONAL TEXTURE SCATTERING RELATIVE TO THE GEOMETRY (OSL).
         </p>
 
+
         <div class="twentytwenty-container rounded">
             <img src="/assets/img/projects/directional-texture-scattering/comparison_directional_scatter.png" alt="Directional texture bombing" width="1920" height="1080" class="aligncenter size-full wp-image-2370">
             <img src="/assets/img/projects/directional-texture-scattering/comparison_random_scatter.png" alt="Random texture bombing" width="1920" height="1080" class="aligncenter size-full wp-image-2368">
         </div>
         <figcaption class="figure-caption text-center">Comparison of directional scattering with random scattering. For certain materials, this directionality is extremely important.</figcaption>
     
+
 
         <div class="row mb-7 mb-md-9 mt-10">
           <div class="col-12 col-md-4 ">
@@ -70,6 +72,17 @@
             <a href="https://www.dropbox.com/s/0jgmyuxvdetpcjx/zpelgrims-directional-scatter-osl-shader.zip?dl=0"><button class="btn btn-primary-soft">Download</button></a>
             
         </div>
+
+
+        <video id="mayaworkflow"
+          class="video-js mt-10 mb-6"
+          controls
+          style="max-width: 100%;"
+          preload="auto"
+          data-setup='{}'>
+        <source src="../assets/video/directional-texture-bombing-explained.mp4" type="video/mp4" />
+        <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+        </video>
         
         <p class="h5 text-secondary mt-7">
             Due to the quantization (sampling positions other than the current shading point) used in this shader, we need to bake out some maps in the process. This of course means the model will need usable UV’s.
